@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PizzaCalc Pro</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#8B1E3F">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --primary: #ff4757; /* A vibrant pizza red */
+      --accent: #f4a261;  /* A crust gold */
+      --text: #e8d7c1;
+      --input-bg: #2a2a2a;
+      --border: #333;
+    }
+
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      margin: 0; 
+      padding-bottom: 80px; /* Space for the bottom button */
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #8B1E3F, #ff4757);
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    h1 { margin: 0; font-weight: 800; font-size: 1.6rem; letter-spacing: -1px; color: white; }
+    p.subtitle { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; color: white; }
+
+    /* Modern Tab Navigation */
+    nav.tabs {
+      display: flex;
+      background: var(--card);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 15px 5px;
+      color: #888;
+      border: none;
+      background: none;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .container { padding: 20px; max-width: 600px; margin: auto; }
+
+    /* Hidden state for tabs */
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+    }
+
+    h3 { margin-top: 0; color: var(--accent); font-size: 1.1rem; }
+
+    /* Placeholder for the math output */
+    .result-display {
+      background: #000;
+      color: #0f0; /* Retro terminal green for contrast */
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+      cursor: pointer;
+      z-index: 1000;
+      width: 80%;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>PIZZACALC PRO</h1>
+  <p class="subtitle">v2.0 • Precision Dough Lab</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="openTab(event, 'dough-tab')">Dough</button>
+  <button class="tab-btn" onclick="openTab(event, 'extras-tab')">Sauce/Cheese</button>
+  <button class="tab-btn" onclick="openTab(event, 'saved-tab')">Library</button>
+</nav>
+
+<div class="container">
+  
+  <!-- DOUGH TAB -->
+  <div id="dough-tab" class="tab-content active">
+    <div class="card">
+      <h3>Dough Foundations</h3>
+      <p style="opacity: 0.6;">Inputs will go here in the next step...</p>
+    </div>
+    
+    <div class="card">
+        <h3>Live Recipe</h3>
+        <div class="result-display">
+          Ready for your first batch...
+        </div>
+    </div>
+  </div>
+
+  <!-- EXTRAS TAB -->
+  <div id="extras-tab" class="tab-content">
+    <div class="card">
+      <h3>The Toppings</h3>
+      <p style="opacity: 0.6;">Sauce and Cheese logic will go here...</p>
+    </div>
+  </div>
+
+  <!-- SAVED TAB -->
+  <div id="saved-tab" class="tab-content">
+    <div class="card">
+      <h3>Recipe Library</h3>
+      <p style="opacity: 0.6;">Your saved experiments will appear here.</p>
+    </div>
+  </div>
+
+</div>
+
+<button class="fab">SAVE RECIPE</button>
+
+<script>
+  function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].classList.remove("active");
+    }
+    tablinks = document.getElementsByClassName("tab-btn");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+    
+    // Haptic feedback (vibration) if supported
+    if (window.navigator.vibrate) {
+      window.navigator.vibrate(10);
+    }
+  }
+</script>
+
+</body>
+</html>
