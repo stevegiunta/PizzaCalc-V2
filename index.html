@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PizzaCalc Pro • Master</title>
+  
+  <!-- PWA / iOS STANDALONE TAGS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PizzaCalc">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#8B1E3F">
+
   <style>
     :root {
       --bg: #121212; --card: #1e1e1e; --primary: #ff4757; --accent: #f4a261;
@@ -350,5 +359,6 @@
       .then(() => console.log('Service Worker Registered'))
       .catch(err => console.log('Service Worker Failed', err));
   }
-</script></body>
+</script>
+</body>
 </html>
