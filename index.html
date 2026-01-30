@@ -27,7 +27,7 @@
     .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
     input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 65px; text-align: center; }
     input.name-input { width: 110px; text-align: left; font-size: 0.85rem; }
-    label { font-size: 0.9rem; font-weight: 500; }
+    label { font-size: 0.85rem; font-weight: 500; color: #bbb; }
 
     /* Checklist & Timer */
     .checklist-item { 
@@ -37,7 +37,6 @@
     }
     .checklist-item.done { opacity: 0.15; border-left-color: var(--success); text-decoration: line-through; }
     .check-val { font-family: monospace; font-weight: bold; font-size: 1.1rem; color: #fff; }
-    .res-label { font-size: 0.9rem; color: #ccc; }
 
     .timer-display { font-size: 3.5rem; font-family: monospace; text-align: center; margin: 10px 0; color: var(--accent); font-weight: bold; }
     .timer-btn { width: 100%; padding: 18px; border-radius: 10px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
@@ -48,7 +47,7 @@
     .settings-grid label { display: flex; align-items: center; gap: 8px; }
 
     .library-item { display: flex; justify-content: space-between; background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 5px; border: 1px solid #333; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     h3 { margin-top: 0; color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
   </style>
 </head>
@@ -75,7 +74,7 @@
     </div>
 
     <div class="card">
-      <h3>Ingredients Active</h3>
+      <h3>Customize Checklist</h3>
       <div class="settings-grid">
         <label><input type="checkbox" id="useF2" checked onchange="toggleUI()"> 2nd Flour</label>
         <label><input type="checkbox" id="useBiga" checked onchange="toggleUI()"> Biga</label>
@@ -87,7 +86,7 @@
     </div>
 
     <div class="card">
-      <h3>Flour Ratios (%)</h3>
+      <h3>Flour Specs</h3>
       <div class="input-row">
         <input type="text" id="f1Name" value="Bread Flour" class="name-input" oninput="calculate()">
         <input type="number" id="f1Pct" value="60" oninput="syncFlours(1)">
@@ -99,20 +98,32 @@
     </div>
 
     <div class="card">
-      <h3>Ratios (%)</h3>
+      <h3>Core Ratios (%)</h3>
       <div class="input-row"><label>Hydration</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
-      <div class="input-row"><label>Salt / Yeast</label>
-        <div><input type="number" id="salt" value="1.9" oninput="calculate()"> <input type="number" id="yeast" value="0.25" step="0.05" oninput="calculate()"></div>
+      <div class="input-row"><label>Salt / Total Yeast</label>
+        <div><input type="number" id="salt" value="1.9" oninput="calculate()"> <input type="number" id="yeast" value="0.25" step="0.01" oninput="calculate()"></div>
       </div>
-      <div id="bigaInputs" class="input-row"><label>Biga Flour / Hydro</label>
-        <div><input type="number" id="bigaF" value="30" oninput="calculate()"> <input type="number" id="bigaH" value="63" oninput="calculate()"></div>
-      </div>
+    </div>
+
+    <div id="bigaInputs" class="card hidden">
+      <h3>Biga Settings (%)</h3>
+      <div class="input-row"><label>Biga Flour (of total)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
+      <div class="input-row"><label>Biga Hydro</label><input type="number" id="bigaH" value="63" oninput="calculate()"></div>
+      <div class="input-row"><label>Biga Yeast (of total yeast)</label><input type="number" id="bigaYPct" value="13.3" oninput="calculate()"></div>
+    </div>
+
+    <div id="extrasInputs" class="card hidden">
+      <h3>Secondary Specs (%)</h3>
+      <div id="rowSugar" class="input-row hidden"><label>Sugar</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
+      <div id="rowOil" class="input-row hidden"><label>Olive Oil</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
+      <div id="rowMalt" class="input-row hidden"><label>Diastatic Malt</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
+      <div id="rowMSG" class="input-row hidden"><label>MSG</label><input type="number" id="msgPct" value="0.28" oninput="calculate()"></div>
     </div>
 
     <div class="card">
       <h3>Library</h3>
       <div class="input-row">
-        <input type="text" id="saveName" placeholder="Template Name..." class="name-input" style="flex:1">
+        <input type="text" id="saveName" placeholder="Recipe Name..." class="name-input" style="flex:1">
         <button onclick="saveRecipe()" style="padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold; margin-left:10px">Save</button>
       </div>
       <div id="libraryList"></div>
@@ -155,7 +166,7 @@
 
 <script>
   let timerInterval, seconds = 0;
-  const FIELDS = ['numPies','targetW','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','bigaF','bigaH','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct'];
+  const FIELDS = ['numPies','targetW','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct'];
 
   function showTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -166,16 +177,25 @@
   }
 
   function toggleUI() {
-    document.getElementById('bigaTabHead').style.display = document.getElementById('useBiga').checked ? 'block' : 'none';
-    document.getElementById('bigaInputs').style.display = document.getElementById('useBiga').checked ? 'flex' : 'none';
+    const useBiga = document.getElementById('useBiga').checked;
+    document.getElementById('bigaTabHead').style.display = useBiga ? 'block' : 'none';
+    document.getElementById('bigaInputs').classList.toggle('hidden', !useBiga);
     document.getElementById('f2Row').style.display = document.getElementById('useF2').checked ? 'flex' : 'none';
+    
+    const showExtras = ['useSugar', 'useOil', 'useMalt', 'useMSG'].some(id => document.getElementById(id).checked);
+    document.getElementById('extrasInputs').classList.toggle('hidden', !showExtras);
+    document.getElementById('rowSugar').classList.toggle('hidden', !document.getElementById('useSugar').checked);
+    document.getElementById('rowOil').classList.toggle('hidden', !document.getElementById('useOil').checked);
+    document.getElementById('rowMalt').classList.toggle('hidden', !document.getElementById('useMalt').checked);
+    document.getElementById('rowMSG').classList.toggle('hidden', !document.getElementById('useMSG').checked);
+    
     calculate();
   }
 
   function syncFlours(id) {
     if (!document.getElementById('useF2').checked) return;
     let f1 = document.getElementById("f1Pct"), f2 = document.getElementById("f2Pct");
-    if(id === 1) f2.value = 100 - f1.value; else f1.value = 100 - f2.value;
+    if(id === 1) f2.value = Math.max(0, 100 - f1.value); else f1.value = Math.max(0, 100 - f2.value);
     calculate();
   }
 
@@ -200,8 +220,13 @@
     const w = parseFloat(document.getElementById('targetW').value) || 0;
     const h = (parseFloat(document.getElementById('hydro').value) || 0)/100;
     const s = (parseFloat(document.getElementById('salt').value) || 0)/100;
-    const yPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
+    const yTotalPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
     
+    const sugarPct = document.getElementById('useSugar').checked ? (parseFloat(document.getElementById('sugarPct').value)||0)/100 : 0;
+    const oilPct = document.getElementById('useOil').checked ? (parseFloat(document.getElementById('oilPct').value)||0)/100 : 0;
+    const maltPct = document.getElementById('useMalt').checked ? (parseFloat(document.getElementById('maltPct').value)||0)/100 : 0;
+    const msgPct = document.getElementById('useMSG').checked ? (parseFloat(document.getElementById('msgPct').value)||0)/100 : 0;
+
     const useBiga = document.getElementById('useBiga').checked;
     const useF2 = document.getElementById('useF2').checked;
     const f1n = document.getElementById("f1Name").value;
@@ -209,22 +234,23 @@
     const f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
     const f2p = useF2 ? (parseFloat(document.getElementById("f2Pct").value) || 0) / 100 : 0;
 
-    // Dough Math (4% residue)
+    // Total Dough Math (4% residue)
     let totalW = w * n;
     let preW = totalW / (1 - 0.04);
-    let extrasPct = (document.getElementById('useSugar').checked?0.015:0) + (document.getElementById('useOil').checked?0.025:0) + (document.getElementById('useMalt').checked?0.005:0) + (document.getElementById('useMSG').checked?0.0028:0);
-    let totalFlour = preW / (1 + h + s + yPct + extrasPct);
+    let totalP = 1 + h + s + yTotalPct + sugarPct + oilPct + maltPct + msgPct;
+    let totalFlour = preW / totalP;
     let totalWater = totalFlour * h;
-    let totalYeast = totalFlour * yPct;
+    let totalYeastG = totalFlour * yTotalPct;
 
     // --- BIGA MATH ---
     let bF_Total = 0, bF1 = 0, bF2 = 0, bW = 0, bY = 0;
     if (useBiga) {
-        bF_Total = totalFlour * (parseFloat(document.getElementById('bigaF').value)/100);
+        let bY_Factor = (parseFloat(document.getElementById('bigaYPct').value) || 0) / 100;
+        bF_Total = totalFlour * ((parseFloat(document.getElementById('bigaF').value) || 0) / 100);
         bF1 = bF_Total * f1p;
         bF2 = bF_Total * f2p;
-        bW = bF_Total * (parseFloat(document.getElementById('bigaH').value)/100);
-        bY = totalYeast * 0.133;
+        bW = bF_Total * ((parseFloat(document.getElementById('bigaH').value) || 0) / 100);
+        bY = totalYeastG * bY_Factor;
     }
 
     // --- RENDER BIGA ---
@@ -241,18 +267,18 @@
     let mixHTML = '<div style="padding:10px; opacity:0.6; font-size:0.75rem">1. DISSOLVE IN WATER</div>';
     mixHTML += renderItem("Water", (totalWater - bW).toFixed(1) + "g");
     mixHTML += renderItem("Salt", (totalFlour * s).toFixed(1) + "g");
-    if(document.getElementById('useMSG').checked) mixHTML += renderItem("MSG", (totalFlour * 0.0028).toFixed(1) + "g");
-    if(document.getElementById('useSugar').checked) mixHTML += renderItem("Sugar", (totalFlour * 0.015).toFixed(1) + "g");
-    if(document.getElementById('useMalt').checked) mixHTML += renderItem("Malt", (totalFlour * 0.005).toFixed(1) + "g");
+    if(document.getElementById('useMSG').checked) mixHTML += renderItem("MSG", (totalFlour * msgPct).toFixed(1) + "g");
+    if(document.getElementById('useSugar').checked) mixHTML += renderItem("Sugar", (totalFlour * sugarPct).toFixed(1) + "g");
+    if(document.getElementById('useMalt').checked) mixHTML += renderItem("Malt", (totalFlour * maltPct).toFixed(1) + "g");
     
     mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.75rem">2. ADD FLOUR & YEAST</div>';
     mixHTML += renderItem(f1n, (totalFlour * f1p - bF1).toFixed(1) + "g");
     if(useF2) mixHTML += renderItem(f2n, (totalFlour * f2p - bF2).toFixed(1) + "g");
-    mixHTML += renderItem("Yeast", (totalYeast - bY).toFixed(2) + "g");
+    mixHTML += renderItem("Yeast", (totalYeastG - bY).toFixed(2) + "g");
     
     if(document.getElementById('useOil').checked) {
         mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.75rem">3. ADD LAST</div>';
-        mixHTML += renderItem("Olive Oil", (totalFlour * 0.025).toFixed(1) + "g");
+        mixHTML += renderItem("Olive Oil", (totalFlour * oilPct).toFixed(1) + "g");
     }
     document.getElementById('mixChecklist').innerHTML = mixHTML;
 
@@ -275,14 +301,14 @@
     let data = {};
     FIELDS.forEach(f => { let el = document.getElementById(f); data[f] = el.type === 'checkbox' ? el.checked : el.value; });
     lib[name] = data; localStorage.setItem('pizLib', JSON.stringify(lib));
-    renderLib();
+    renderLib(); alert("Saved!");
   }
 
   function renderLib() {
     let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
     let html = '';
     for(let name in lib) { html += `<div class="library-item"><span onclick="loadRecipe('${name}')" style="flex:1; cursor:pointer">${name}</span><span onclick="deleteRecipe('${name}')" style="color:red; cursor:pointer">×</span></div>`; }
-    document.getElementById('libraryList').innerHTML = html;
+    document.getElementById('libraryList').innerHTML = html || '<p style="font-size:0.7rem; opacity:0.4; text-align:center">No saved recipes</p>';
   }
 
   function loadRecipe(name) {
