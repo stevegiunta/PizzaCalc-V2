@@ -24,9 +24,9 @@
 
     /* Inputs */
     .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
-    input, textarea { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 65px; text-align: center; font-family: inherit; }
+    input, textarea { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 70px; text-align: center; font-family: inherit; }
     input.name-input { width: 110px; text-align: left; font-size: 0.85rem; }
-    textarea.wide-input { width: 100%; text-align: left; height: 60px; box-sizing: border-box; }
+    textarea.wide-input { width: 100%; text-align: left; height: 60px; box-sizing: border-box; font-size: 0.85rem; color: #fff; }
     label { font-size: 0.8rem; font-weight: 500; color: #bbb; }
 
     /* Checklist & Timer */
@@ -49,6 +49,8 @@
     .library-item { display: flex; justify-content: space-between; background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 5px; border: 1px solid #333; }
     .hidden { display: none !important; }
     h3 { margin: 0 0 10px 0; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .update-banner { background: #1e3a2f; color: var(--success); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; text-align: center; margin-bottom: 15px; border: 1px solid var(--success); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -88,41 +90,24 @@
     </div>
 
     <div class="card">
-      <h3>Flour Ratios (%)</h3>
-      <div class="input-row"><input type="text" id="f1Name" value="Bread Flour" class="name-input" oninput="calculate()"><input type="number" id="f1Pct" value="60" oninput="syncFlours(1)"></div>
-      <div id="f2Row" class="input-row"><input type="text" id="f2Name" value="00 Flour" class="name-input" oninput="calculate()"><input type="number" id="f2Pct" value="40" oninput="syncFlours(2)"></div>
-    </div>
-
-    <div class="card">
-      <h3>Dough Specs (%)</h3>
-      <div class="input-row"><label>Hydration</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
-      <div class="input-row"><label>Salt / Total Yeast</label>
-        <div><input type="number" id="salt" value="1.9" oninput="calculate()"> <input type="number" id="yeast" value="0.25" step="0.01" oninput="calculate()"></div>
-      </div>
-    </div>
-
-    <div id="bigaInputs" class="card hidden">
-      <h3>Biga Settings</h3>
-      <div class="input-row"><label>Flour (%)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
-      <div class="input-row"><label>Hydration (%)</label><input type="number" id="bigaH" value="63" oninput="calculate()"></div>
-      <div class="input-row"><label>Yeast (of total %)</label><input type="number" id="bigaYPct" value="13.3" oninput="calculate()"></div>
-    </div>
-
-    <div id="extrasInputs" class="card hidden">
-      <h3>Secondary Ingredients (%)</h3>
-      <div id="rowSugar" class="input-row hidden"><label>Sugar</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
-      <div id="rowOil" class="input-row hidden"><label>Olive Oil</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
-      <div id="rowMalt" class="input-row hidden"><label>Diastatic Malt</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
-      <div id="rowMSG" class="input-row hidden"><label>MSG</label><input type="number" id="msgPct" value="0.28" oninput="calculate()"></div>
-    </div>
-
-    <div class="card">
       <h3>Library</h3>
       <div class="input-row">
-        <input type="text" id="saveName" placeholder="Template Name..." class="name-input" style="flex:1">
+        <input type="text" id="saveName" placeholder="Recipe Name..." class="name-input" style="flex:1">
         <button onclick="saveRecipe()" style="padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold; margin-left:10px; color:#000">Save</button>
       </div>
       <div id="libraryList"></div>
+    </div>
+    
+    <!-- Collapsible Advanced Settings -->
+    <div class="card">
+        <h3>Ratios & Specs</h3>
+        <div class="input-row"><label>Hydration / Salt (%)</label>
+            <div><input type="number" id="hydro" value="67" oninput="calculate()"> <input type="number" id="salt" value="1.9" oninput="calculate()"></div>
+        </div>
+        <div class="input-row"><label>Total Yeast (%)</label><input type="number" id="yeast" value="0.25" step="0.01" oninput="calculate()"></div>
+        <div id="f2Row" class="input-row"><label>Flour Mix (%)</label>
+            <div><input type="number" id="f1Pct" value="60" oninput="syncFlours(1)"> <input type="number" id="f2Pct" value="40" oninput="syncFlours(2)"></div>
+        </div>
     </div>
   </div>
 
@@ -135,46 +120,34 @@
   <!-- 3. MIX -->
   <div id="mix" class="tab-content">
     <div class="card">
-      <h3>Stopwatch</h3>
+      <h3>Mix Stopwatch</h3>
       <div class="timer-display" id="timer">00:00</div>
       <div class="timer-controls">
         <button id="timerBtn" class="timer-btn start" onclick="toggleTimer()">START MIX</button>
         <button class="reset-btn" onclick="resetTimer()">RESET</button>
       </div>
     </div>
-    <h2 style="color:var(--accent)">Stage 2: Final Mix</h2>
     <div id="mixChecklist"></div>
   </div>
 
   <!-- 4. BAKE -->
   <div id="bake" class="tab-content">
+    <div id="syncBanner" class="update-banner hidden" onclick="saveRecipe(true)">
+        ★ TODAY'S BAKE WAS PERFECT? CLICK TO UPDATE TARGETS
+    </div>
+
     <div class="card">
       <h3>Topping Prep Checklist</h3>
-      <textarea id="toppingNotes" class="wide-input" placeholder="List your toppings here (e.g. Cook Sausage, Grate Mozz...)"></textarea>
+      <textarea id="toppingNotes" class="wide-input" placeholder="List your toppings..."></textarea>
     </div>
 
     <div class="card">
-      <h3>Bake Experiment Log</h3>
-      <div class="input-row"><label>Dough Out Time</label><input type="text" id="logDoughOut" placeholder="4:15 PM" class="name-input" style="width:80px"></div>
-      <div class="input-row"><label>Oven Set Temp (°F)</label><input type="number" id="logOvenTemp" value="525"></div>
-      <div class="input-row"><label>Steel Check Temp (°F)</label><input type="number" id="logSteelTemp" placeholder="438"></div>
+      <h3>Bake Session Log (Target vs Actual)</h3>
+      <div class="input-row"><label>Dough Out Time</label><input type="text" id="logDoughOut" placeholder="4:15 PM" class="name-input"></div>
+      <div class="input-row"><label>Target Oven Temp (°F)</label><input type="number" id="logOvenTemp" value="525"></div>
+      <div class="input-row"><label>Steel Temp Log (°F)</label><input type="number" id="logSteelTemp" placeholder="438" oninput="showSyncBanner()"></div>
     </div>
 
-    <div class="card">
-      <h3>Ingredients (per pie)</h3>
-      <div class="input-row"><label>Cheese 1 Name / g</label>
-        <div><input type="text" id="c1Name" value="WMLM" class="name-input" style="width:80px"> <input type="number" id="c1G" value="212" oninput="calculate()"></div>
-      </div>
-      <div id="c2Row" class="input-row hidden"><label>Cheese 2 Name / g</label>
-        <div><input type="text" id="c2Name" value="Parm" class="name-input" style="width:80px"> <input type="number" id="c2G" value="10" oninput="calculate()"></div>
-      </div>
-      <div class="input-row"><label>Sauce (g) / Salt (%)</label>
-        <div><input type="number" id="saucePP" value="100" oninput="calculate()"> <input type="number" id="sSalt" value="0.75" step="0.05" oninput="calculate()"></div>
-      </div>
-      <div class="input-row"><label>Garlic / Oregano (%)</label>
-        <div><input type="number" id="sGarlic" value="0.5" step="0.05" oninput="calculate()"> <input type="number" id="sOregano" value="0.3" step="0.05" oninput="calculate()"></div>
-      </div>
-    </div>
     <div id="bakeChecklist"></div>
   </div>
 
@@ -183,6 +156,9 @@
 <script>
   let timerInterval, seconds = 0;
   const FIELDS = ['numPies','targetW','residue','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','useCheese2','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct','c1Name','c1G','c2Name','c2G','toppingNotes','logDoughOut','logOvenTemp','logSteelTemp'];
+
+  // Default hidden values for initialization
+  const DEFAULTS = { bigaF: 30, bigaH: 63, bigaYPct: 13.3, sugarPct: 1.5, oilPct: 2.5, maltPct: 0.5, msgPct: 0.28, f1Name: "Bread Flour", f2Name: "00 Flour", c1Name: "WMLM", c1G: 212, c2Name: "Parm", c2G: 10, saucePP: 100, sSalt: 0.75, sGarlic: 0.5, sOregano: 0.3 };
 
   function showTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -195,20 +171,11 @@
   function toggleUI() {
     const useBiga = document.getElementById('useBiga').checked;
     document.getElementById('bigaTabHead').style.display = useBiga ? 'block' : 'none';
-    document.getElementById('bigaInputs').classList.toggle('hidden', !useBiga);
     document.getElementById('f2Row').style.display = document.getElementById('useF2').checked ? 'flex' : 'none';
-    document.getElementById('c2Row').classList.toggle('hidden', !document.getElementById('useCheese2').checked);
-    const showExtras = ['useSugar', 'useOil', 'useMalt', 'useMSG'].some(id => document.getElementById(id).checked);
-    document.getElementById('extrasInputs').classList.toggle('hidden', !showExtras);
-    document.getElementById('rowSugar').classList.toggle('hidden', !document.getElementById('useSugar').checked);
-    document.getElementById('rowOil').classList.toggle('hidden', !document.getElementById('useOil').checked);
-    document.getElementById('rowMalt').classList.toggle('hidden', !document.getElementById('useMalt').checked);
-    document.getElementById('rowMSG').classList.toggle('hidden', !document.getElementById('useMSG').checked);
     calculate();
   }
 
   function syncFlours(id) {
-    if (!document.getElementById('useF2').checked) return;
     let f1 = document.getElementById("f1Pct"), f2 = document.getElementById("f2Pct");
     if(id === 1) f2.value = Math.max(0, 100 - f1.value); else f1.value = Math.max(0, 100 - f2.value);
     calculate();
@@ -237,92 +204,108 @@
     document.getElementById('timerBtn').className = "timer-btn start";
   }
 
+  function showSyncBanner() {
+    document.getElementById('syncBanner').classList.remove('hidden');
+  }
+
   function calculate() {
     const n = parseFloat(document.getElementById('numPies').value) || 0;
     const w = parseFloat(document.getElementById('targetW').value) || 0;
-    const resPct = (parseFloat(document.getElementById('residue').value) || 0) / 100;
-    const h = (parseFloat(document.getElementById('hydro').value) || 0)/100, s = (parseFloat(document.getElementById('salt').value) || 0)/100, yTotalPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
-    const sugP = document.getElementById('useSugar').checked ? (parseFloat(document.getElementById('sugarPct').value)||0)/100 : 0;
-    const oilP = document.getElementById('useOil').checked ? (parseFloat(document.getElementById('oilPct').value)||0)/100 : 0;
-    const malP = document.getElementById('useMalt').checked ? (parseFloat(document.getElementById('maltPct').value)||0)/100 : 0;
-    const msgP = document.getElementById('useMSG').checked ? (parseFloat(document.getElementById('msgPct').value)||0)/100 : 0;
-    const useBiga = document.getElementById('useBiga').checked, useF2 = document.getElementById('useF2').checked;
-    const f1n = document.getElementById("f1Name").value, f2n = document.getElementById("f2Name").value;
-    const f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100, f2p = useF2 ? (parseFloat(document.getElementById("f2Pct").value) || 0) / 100 : 0;
+    const resP = (parseFloat(document.getElementById('residue').value) || 0) / 100;
+    const h = (parseFloat(document.getElementById('hydro').value) || 0)/100, s = (parseFloat(document.getElementById('salt').value) || 0)/100, yT = (parseFloat(document.getElementById('yeast').value) || 0)/100;
+    
+    // Use stored defaults for hidden fields if not in library
+    const sugP = document.getElementById('useSugar').checked ? (DEFAULTS.sugarPct/100) : 0;
+    const oilP = document.getElementById('useOil').checked ? (DEFAULTS.oilPct/100) : 0;
+    const malP = document.getElementById('useMalt').checked ? (DEFAULTS.maltPct/100) : 0;
+    const msgP = document.getElementById('useMSG').checked ? (DEFAULTS.msgPct/100) : 0;
 
-    let preW = (w * n) / (1 - resPct), totalP = 1 + h + s + yTotalPct + sugP + oilP + malP + msgP;
-    let totalFlour = preW / totalP, totalWater = totalFlour * h, totalYeastG = totalFlour * yTotalPct;
+    let preW = (w * n) / (1 - resP), tP = 1 + h + s + yT + sugP + oilP + malP + msgP;
+    let tF = preW / tP, tW = tF * h, tYG = tF * yT;
+    let f1p = (parseFloat(document.getElementById('f1Pct').value)||0)/100, f2p = 1 - f1p;
 
+    // BIGA
     let bF_T = 0, bF1 = 0, bF2 = 0, bW = 0, bY = 0;
-    if (useBiga) {
-        bF_T = totalFlour * ((parseFloat(document.getElementById('bigaF').value) || 0) / 100);
+    if (document.getElementById('useBiga').checked) {
+        bF_T = tF * (DEFAULTS.bigaF / 100);
         bF1 = bF_T * f1p; bF2 = bF_T * f2p;
-        bW = bF_T * ((parseFloat(document.getElementById('bigaH').value) || 0) / 100);
-        bY = totalYeastG * ((parseFloat(document.getElementById('bigaYPct').value) || 0) / 100);
+        bW = bF_T * (DEFAULTS.bigaH / 100);
+        bY = tYG * (DEFAULTS.bigaYPct / 100);
+        let bh = ``;
+        bh += renderItem(DEFAULTS.f1Name, bF1.toFixed(1) + "g");
+        if(document.getElementById('useF2').checked) bh += renderItem(DEFAULTS.f2Name, bF2.toFixed(1) + "g");
+        bh += renderItem("Water", bW.toFixed(1) + "g");
+        bh += renderItem("Yeast", bY.toFixed(2) + "g");
+        document.getElementById('bigaChecklist').innerHTML = bh;
     }
 
-    let bigaHTML = '';
-    if(useBiga) {
-        bigaHTML += renderItem(f1n, bF1.toFixed(1) + "g");
-        if(useF2) bigaHTML += renderItem(f2n, bF2.toFixed(1) + "g");
-        bigaHTML += renderItem("Water", bW.toFixed(1) + "g");
-        bigaHTML += renderItem("Yeast", bY.toFixed(2) + "g");
-    }
-    document.getElementById('bigaChecklist').innerHTML = bigaHTML;
-
-    let mixHTML = '<div style="padding:10px; opacity:0.6; font-size:0.7rem">1. DISSOLVE IN WATER</div>';
-    mixHTML += renderItem("Water", (totalWater - bW).toFixed(1) + "g");
-    mixHTML += renderItem("Salt", (totalFlour * s).toFixed(1) + "g");
-    if(document.getElementById('useMSG').checked) mixHTML += renderItem("MSG", (totalFlour * msgP).toFixed(1) + "g");
-    if(document.getElementById('useSugar').checked) mixHTML += renderItem("Sugar", (totalFlour * sugP).toFixed(1) + "g");
-    if(document.getElementById('useMalt').checked) mixHTML += renderItem("Malt", (totalFlour * malP).toFixed(1) + "g");
-    mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.7rem">2. ADD FLOURS & YEAST</div>';
-    mixHTML += renderItem(f1n, (totalFlour * f1p - bF1).toFixed(1) + "g");
-    if(useF2) mixHTML += renderItem(f2n, (totalFlour * f2p - bF2).toFixed(1) + "g");
-    mixHTML += renderItem("Yeast", (totalYeastG - bY).toFixed(2) + "g");
+    // MIX
+    let mh = '<div style="padding:10px; opacity:0.6; font-size:0.7rem">1. DISSOLVE</div>';
+    mh += renderItem("Water", (tW - bW).toFixed(1) + "g");
+    mh += renderItem("Salt", (tF * s).toFixed(1) + "g");
+    if(document.getElementById('useMSG').checked) mh += renderItem("MSG", (tF * msgP).toFixed(1) + "g");
+    mh += '<div style="padding:10px; opacity:0.6; font-size:0.7rem">2. ADD FLOURS</div>';
+    mh += renderItem(DEFAULTS.f1Name, (tF * f1p - bF1).toFixed(1) + "g");
+    if(document.getElementById('useF2').checked) mh += renderItem(DEFAULTS.f2Name, (tF * f2p - bF2).toFixed(1) + "g");
+    mh += renderItem("Yeast", (tYG - bY).toFixed(2) + "g");
     if(document.getElementById('useOil').checked) {
-        mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.7rem">3. ADD AFTER INCORPORATION</div>';
-        mixHTML += renderItem("Olive Oil", (totalFlour * oilP).toFixed(1) + "g");
+        mh += '<div style="padding:10px; opacity:0.6; font-size:0.7rem">3. ADD LAST</div>';
+        mh += renderItem("Olive Oil", (tF * oilP).toFixed(1) + "g");
     }
-    document.getElementById('mixChecklist').innerHTML = mixHTML;
+    document.getElementById('mixChecklist').innerHTML = mh;
 
-    let bakeHTML = '<div style="padding:10px; opacity:0.6; font-size:0.7rem">CHEESE BATCH</div>';
-    bakeHTML += renderItem(document.getElementById('c1Name').value, (parseFloat(document.getElementById('c1G').value) * n).toFixed(1) + "g");
-    if(document.getElementById('useCheese2').checked) bakeHTML += renderItem(document.getElementById('c2Name').value, (parseFloat(document.getElementById('c2G').value) * n).toFixed(1) + "g");
-    let ts = (parseFloat(document.getElementById('saucePP').value) || 0) * n;
-    bakeHTML += '<div style="padding:10px; opacity:0.6; font-size:0.7rem">SAUCE BATCH</div>';
-    bakeHTML += renderItem("Base Sauce", ts.toFixed(1) + "g");
-    bakeHTML += renderItem("Salt", (ts * (parseFloat(document.getElementById('sSalt').value)/100)).toFixed(2) + "g");
-    bakeHTML += renderItem("Garlic Powder", (ts * (parseFloat(document.getElementById('sGarlic').value)/100)).toFixed(2) + "g");
-    bakeHTML += renderItem("Oregano", (ts * (parseFloat(document.getElementById('sOregano').value)/100)).toFixed(2) + "g");
-    document.getElementById('bakeChecklist').innerHTML = bakeHTML;
+    // BAKE
+    let bh = '<div style="padding:10px; opacity:0.6; font-size:0.7rem">TOPPINGS BATCH</div>';
+    bh += renderItem(DEFAULTS.c1Name, (DEFAULTS.c1G * n).toFixed(1) + "g");
+    if(document.getElementById('useCheese2').checked) bh += renderItem(DEFAULTS.c2Name, (DEFAULTS.c2G * n).toFixed(1) + "g");
+    let ts = DEFAULTS.saucePP * n;
+    bh += renderItem("Base Sauce", ts.toFixed(1) + "g");
+    bh += renderItem("Salt", (ts * (DEFAULTS.sSalt/100)).toFixed(2) + "g");
+    document.getElementById('bakeChecklist').innerHTML = bh;
   }
 
   function renderItem(l, v) { return `<div class="checklist-item" onclick="this.classList.toggle('done')"><span class="res-label">${l}</span><span class="check-val">${v}</span></div>`; }
 
-  function saveRecipe() {
-    const name = document.getElementById('saveName').value; if(!name) return;
-    let lib = JSON.parse(localStorage.getItem('pizLibV2') || '{}');
+  function saveRecipe(isUpdate = false) {
+    let name = document.getElementById('saveName').value;
+    if(isUpdate) name = document.getElementById('saveName').dataset.current || name;
+    if(!name) { alert("Enter a name!"); return; }
+    
+    let lib = JSON.parse(localStorage.getItem('pizLibV3') || '{}');
     let data = {};
-    FIELDS.forEach(f => { let el = document.getElementById(f); data[f] = el.type === 'checkbox' ? el.checked : el.value; });
-    lib[name] = data; localStorage.setItem('pizLibV2', JSON.stringify(lib));
-    renderLib(); alert("Saved!");
+    FIELDS.forEach(f => { 
+        let el = document.getElementById(f); 
+        if(el) data[f] = el.type === 'checkbox' ? el.checked : el.value;
+        else data[f] = DEFAULTS[f]; // Keep hidden defaults
+    });
+    lib[name] = data;
+    localStorage.setItem('pizLibV3', JSON.stringify(lib));
+    document.getElementById('syncBanner').classList.add('hidden');
+    renderLib();
+    alert("Recipe Updated with Targets!");
   }
 
   function renderLib() {
-    let lib = JSON.parse(localStorage.getItem('pizLibV2') || '{}');
+    let lib = JSON.parse(localStorage.getItem('pizLibV3') || '{}');
     let html = '';
     for(let name in lib) html += `<div class="library-item"><span onclick="loadRecipe('${name}')" style="flex:1; cursor:pointer">${name}</span><span onclick="deleteRecipe('${name}')" style="color:red; cursor:pointer">×</span></div>`;
-    document.getElementById('libraryList').innerHTML = html || '<p style="font-size:0.7rem; opacity:0.4; text-align:center">No saved recipes</p>';
+    document.getElementById('libraryList').innerHTML = html || '<p style="font-size:0.7rem; opacity:0.4; text-align:center">No recipes saved</p>';
   }
 
   function loadRecipe(n) {
-    let lib = JSON.parse(localStorage.getItem('pizLibV2') || '{}'), data = lib[n];
-    FIELDS.forEach(f => { let el = document.getElementById(f); if(el && el.type === 'checkbox') el.checked = data[f]; else if(el) el.value = data[f]; });
+    let lib = JSON.parse(localStorage.getItem('pizLibV3') || '{}'), data = lib[n];
+    document.getElementById('saveName').value = n;
+    document.getElementById('saveName').dataset.current = n;
+    FIELDS.forEach(f => { 
+        let el = document.getElementById(f); 
+        if(el && el.type === 'checkbox') el.checked = data[f]; 
+        else if(el) el.value = data[f];
+        else DEFAULTS[f] = data[f]; // Load hidden percentages into defaults
+    });
     toggleUI();
   }
 
-  function deleteRecipe(n) { let lib = JSON.parse(localStorage.getItem('pizLibV2') || '{}'); delete lib[n]; localStorage.setItem('pizLibV2', JSON.stringify(lib)); renderLib(); }
+  function deleteRecipe(n) { let lib = JSON.parse(localStorage.getItem('pizLibV3') || '{}'); delete lib[n]; localStorage.setItem('pizLibV3', JSON.stringify(lib)); renderLib(); }
 
   window.onload = () => { renderLib(); toggleUI(); };
 </script>
