@@ -4,227 +4,148 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PizzaCalc Pro</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#8B1E3F">
-  <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg: #121212;
-      --card: #1e1e1e;
-      --primary: #ff4757;
-      --accent: #f4a261;
-      --text: #e8d7c1;
-      --input-bg: #2a2a2a;
-      --border: #333;
+      --bg: #121212; --card: #1e1e1e; --primary: #ff4757; --accent: #f4a261;
+      --text: #e8d7c1; --input-bg: #2a2a2a; --border: #333;
     }
-
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
+    header { background: linear-gradient(135deg, #8B1E3F, #ff4757); padding: 20px; text-align: center; }
+    h1 { margin: 0; font-size: 1.4rem; color: white; }
     
-    header {
-      background: linear-gradient(135deg, #8B1E3F, #ff4757);
-      padding: 30px 20px;
-      text-align: center;
-    }
-    h1 { margin: 0; font-weight: 800; font-size: 1.6rem; color: white; }
-    .subtitle { margin: 5px 0 0; opacity: 0.8; font-size: 0.8rem; color: white; }
-
-    nav.tabs {
-      display: flex; background: var(--card); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
-    }
-    .tab-btn {
-      padding: 15px 5px; color: #888; border: none; background: none; font-weight: 600; flex: 1; font-size: 0.75rem; text-transform: uppercase;
-    }
-    .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-
     .container { padding: 15px; max-width: 500px; margin: auto; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+    h3 { margin: 0 0 12px 0; color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
 
-    .card {
-      background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border);
-    }
-    h3 { margin: 0 0 15px 0; color: var(--accent); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+    /* Layout Helpers */
+    .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    input, select { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; font-family: inherit; }
+    input[type="number"] { width: 60px; text-align: center; }
+    input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+    
+    .hidden { display: none; }
+    .dim { opacity: 0.3; pointer-events: none; }
 
-    /* Input Styling */
-    .input-row {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-    }
-    .input-row label { font-size: 0.9rem; font-weight: 500; }
-    .input-row input {
-      background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; width: 80px; text-align: center; font-family: inherit;
-    }
-    .input-row input.wide { width: 120px; text-align: left; }
-
-    /* Results Styling */
-    .result-display {
-      background: #000; color: #f4a261; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 0.9rem; line-height: 1.6; border: 1px solid #333;
-    }
-    .res-val { color: #fff; font-weight: bold; }
-    .res-label { color: #888; }
-
-    .fab {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 800; width: 80%; max-width: 300px; z-index: 1000;
-    }
+    .result-display { background: #000; color: #f4a261; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.85rem; line-height: 1.6; }
+    .section-head { color: var(--primary); font-weight: 800; display: block; margin-top: 10px; border-bottom: 1px solid #222; }
+    .res-val { color: #fff; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>PIZZACALC PRO</h1>
-  <div class="subtitle">Dough Lab • v2.0</div>
-</header>
-
-<nav class="tabs">
-  <button class="tab-btn active" onclick="openTab(event, 'dough-tab')">Dough</button>
-  <button class="tab-btn" onclick="openTab(event, 'extras-tab')">Sauce/Cheese</button>
-  <button class="tab-btn" onclick="openTab(event, 'saved-tab')">Library</button>
-</nav>
+<header><h1>PIZZACALC PRO v2</h1></header>
 
 <div class="container">
-  
-  <div id="dough-tab" class="tab-content active">
-    <div class="card">
-      <h3>Batch Info</h3>
-      <div class="input-row">
-        <label>Number of Pies</label>
-        <input type="number" id="numPies" value="3" oninput="calculate()">
-      </div>
-      <div class="input-row">
-        <label>Target Weight (g)</label>
-        <input type="number" id="targetWeight" value="340" oninput="calculate()">
-      </div>
-      <div class="input-row">
-        <label>Bowl Residue (%)</label>
-        <input type="number" id="residue" value="4" step="0.5" oninput="calculate()">
-      </div>
-    </div>
 
-    <div class="card">
-      <h3>Percentages</h3>
-      <div class="input-row">
-        <label>Hydration (%)</label>
-        <input type="number" id="hydration" value="67" step="0.5" oninput="calculate()">
-      </div>
-      <div class="input-row">
-        <label>Salt (%)</label>
-        <input type="number" id="salt" value="1.9" step="0.1" oninput="calculate()">
-      </div>
-      <div class="input-row">
-        <label>Total Yeast (%)</label>
-        <input type="number" id="totalYeast" value="0.25" step="0.05" oninput="calculate()">
-      </div>
+  <!-- 1. INGREDIENT SELECTOR (The "Toggle" strategy) -->
+  <div class="card">
+    <h3>Active Ingredients</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem;">
+      <label><input type="checkbox" id="useBiga" checked onchange="toggleInputs()"> Biga</label>
+      <label><input type="checkbox" id="useOil" checked onchange="toggleInputs()"> Oil</label>
+      <label><input type="checkbox" id="useSugar" checked onchange="toggleInputs()"> Sugar</label>
+      <label><input type="checkbox" id="useMalt" checked onchange="toggleInputs()"> Malt</label>
+      <label><input type="checkbox" id="useMSG" checked onchange="toggleInputs()"> MSG</label>
     </div>
+  </div>
 
-    <div class="card">
-      <h3>Biga Settings</h3>
-      <div class="input-row">
-        <label>Biga Flour (% of total)</label>
-        <input type="number" id="bigaFlour" value="30" oninput="calculate()">
-      </div>
-      <div class="input-row">
-        <label>Biga Hydration (%)</label>
-        <input type="number" id="bigaHydration" value="63" oninput="calculate()">
-      </div>
+  <!-- 2. MAIN INPUTS -->
+  <div class="card">
+    <h3>Dough Basics</h3>
+    <div class="input-row"><label>Pies / Weight(g)</label>
+      <div><input type="number" id="numPies" value="3" oninput="calculate()"> <input type="number" id="targetW" value="340" oninput="calculate()"></div>
     </div>
+    <div class="input-row"><label>Hydration (%)</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
     
-    <div class="card">
-        <h3>Calculated Recipe</h3>
-        <div id="result" class="result-display">
-          <!-- Math pops in here -->
-        </div>
+    <!-- Conditional Inputs -->
+    <div id="bigaSection">
+        <div class="input-row"><label>Biga Flour (%)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
     </div>
   </div>
 
-  <div id="extras-tab" class="tab-content">
-    <div class="card">
-      <h3>Sauce & Cheese</h3>
-      <p style="opacity: 0.5;">Coming in the next step...</p>
+  <!-- 3. SAUCE (The "Library" test) -->
+  <div class="card">
+    <h3>Sauce Settings</h3>
+    <div class="input-row">
+      <label>Tomato Brand</label>
+      <select id="tomatoBrand" onchange="updateSauceSalt()">
+        <option value="custom">Custom / Other</option>
+        <option value="brandA">Brand A (Low Salt - 0.35%)</option>
+        <option value="brandB">Brand B (No Salt - 0.75%)</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label>Sauce Salt (%)</label>
+      <input type="number" id="sauceSalt" value="0.75" step="0.05" oninput="calculate()">
     </div>
   </div>
 
-  <div id="saved-tab" class="tab-content">
-    <div class="card">
-      <h3>Saved Recipes</h3>
-      <p style="opacity: 0.5;">Library logic coming soon...</p>
-    </div>
+  <!-- 4. RESULTS -->
+  <div class="card">
+    <h3>Live Recipe</h3>
+    <div id="result" class="result-display"></div>
   </div>
 
 </div>
 
-<button class="fab" onclick="alert('Saving logic coming next!')">SAVE RECIPE</button>
-
 <script>
-  // TAB NAVIGATION
-  function openTab(evt, tabName) {
-    let tabcontent = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
-    let tablinks = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
+  function toggleInputs() {
+    // Show/Hide sections based on checkboxes
+    document.getElementById('bigaSection').className = document.getElementById('useBiga').checked ? '' : 'hidden';
+    calculate();
   }
 
-  // THE MATH ENGINE
+  function updateSauceSalt() {
+    const brand = document.getElementById('tomatoBrand').value;
+    const saltInput = document.getElementById('sauceSalt');
+    
+    if (brand === 'brandA') saltInput.value = 0.35;
+    if (brand === 'brandB') saltInput.value = 0.75;
+    
+    // If they choose a brand, let's dim the manual input to show it's "set"
+    saltInput.style.opacity = (brand === 'custom') ? '1' : '0.5';
+    
+    calculate();
+  }
+
   function calculate() {
-    // 1. Get Values
+    // Basic logic
     const n = parseFloat(document.getElementById("numPies").value) || 0;
-    const w = parseFloat(document.getElementById("targetWeight").value) || 0;
-    const r = (parseFloat(document.getElementById("residue").value) || 0) / 100;
-    const h = (parseFloat(document.getElementById("hydration").value) || 0) / 100;
-    const s = (parseFloat(document.getElementById("salt").value) || 0) / 100;
-    const y = (parseFloat(document.getElementById("totalYeast").value) || 0) / 100;
+    const w = parseFloat(document.getElementById("targetW").value) || 0;
+    const h = (parseFloat(document.getElementById("hydro").value) || 0) / 100;
     
-    const bf = (parseFloat(document.getElementById("bigaFlour").value) || 0) / 100;
-    const bh = (parseFloat(document.getElementById("bigaHydration").value) || 0) / 100;
+    // Check if ingredient is active, else use 0
+    const useBiga = document.getElementById('useBiga').checked;
+    const bigaPct = useBiga ? (parseFloat(document.getElementById("bigaF").value)/100) : 0;
+    
+    const sauceSalt = parseFloat(document.getElementById("sauceSalt").value);
 
-    // Fixed Extras (based on your original V1 settings)
-    const sugar = 0.015; 
-    const oil = 0.025;
-
-    // 2. Calculations
+    // Simplified math for demo
     let totalW = w * n;
-    let preW = totalW / (1 - r);
-    let totalP = 1 + h + s + y + sugar + oil; 
-    let flour = preW / totalP;
+    let flour = totalW / (1 + h + 0.02); // simplified constant for salt/yeast
     
-    let water = flour * h;
-    let yeast = flour * y;
-    
-    let bigaF = flour * bf;
-    let bigaW = bigaF * bh;
-    let bigaY = yeast * 0.133; // 13.3% of yeast in biga per your v1
-
-    let finalF = flour - bigaF;
-    let finalW = water - bigaW;
-    let finalY = yeast - bigaY;
-
-    // 3. Display Results
-    document.getElementById("result").innerHTML = `
-      <div style="border-bottom: 1px solid #333; margin-bottom:10px; padding-bottom:10px">
-        <span class="res-label">Total Batch:</span> <span class="res-val">${preW.toFixed(1)}g</span><br>
-        <span class="res-label">Per Pie:</span> <span class="res-val">${(preW/n).toFixed(1)}g</span>
-      </div>
-      
-      <b style="color:var(--primary)">BIGA (Night Before)</b><br>
-      <span class="res-label">Flour:</span> <span class="res-val">${bigaF.toFixed(1)}g</span><br>
-      <span class="res-label">Water:</span> <span class="res-val">${bigaW.toFixed(1)}g</span><br>
-      <span class="res-label">Yeast:</span> <span class="res-val">${bigaY.toFixed(2)}g</span><br><br>
-      
-      <b style="color:var(--primary)">FINAL MIX</b><br>
-      <span class="res-label">Remaining Flour:</span> <span class="res-val">${finalF.toFixed(1)}g</span><br>
-      <span class="res-label">Remaining Water:</span> <span class="res-val">${finalW.toFixed(1)}g</span><br>
-      <span class="res-label">Salt:</span> <span class="res-val">${(flour * s).toFixed(1)}g</span><br>
-      <span class="res-label">Yeast:</span> <span class="res-val">${finalY.toFixed(2)}g</span><br>
-      <span class="res-label">Oil/Sugar:</span> <span class="res-val">${(flour*oil + flour*sugar).toFixed(1)}g</span>
+    let res = `
+      <span class="section-head">DOUGH BATCH</span>
+      Total Flour: <span class="res-val">${flour.toFixed(1)}g</span><br>
+      Total Water: <span class="res-val">${(flour * h).toFixed(1)}g</span><br>
     `;
+
+    if (useBiga) {
+      res += `
+        <span class="section-head">BIGA</span>
+        Biga Flour: <span class="res-val">${(flour * bigaPct).toFixed(1)}g</span>
+      `;
+    }
+
+    res += `
+      <span class="section-head">SAUCE NOTES</span>
+      Salt to add: <span class="res-val">${sauceSalt}%</span>
+    `;
+
+    document.getElementById("result").innerHTML = res;
   }
 
-  // Run calculation once on load
   window.onload = calculate;
 </script>
-
 </body>
 </html>
