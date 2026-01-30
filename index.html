@@ -25,7 +25,7 @@
     .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
     input, textarea { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 70px; text-align: center; font-family: inherit; }
     input.name-input { width: 110px; text-align: left; font-size: 0.85rem; }
-    textarea.wide-input { width: 100%; text-align: left; height: 60px; box-sizing: border-box; font-size: 0.85rem; color: #fff; padding: 10px; line-height: 1.4; }
+    textarea.wide-input { width: 100%; text-align: left; height: 70px; box-sizing: border-box; font-size: 0.85rem; color: #fff; padding: 10px; line-height: 1.4; }
     label { font-size: 0.8rem; font-weight: 500; color: #bbb; }
 
     .checklist-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #252525; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--accent); cursor: pointer; }
@@ -49,6 +49,7 @@
     .pie-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .pie-num { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; flex-shrink: 0; }
     .now-btn { background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
+    .routine-box { background: #1e2a24; border: 1px solid var(--success); color: #fff; }
   </style>
 </head>
 <body>
@@ -67,7 +68,7 @@
   <!-- 1. SETUP -->
   <div id="setup" class="tab-content active">
     <div class="card">
-      <h3>Batch Foundations</h3>
+      <h3>Batch Size & Residue</h3>
       <div class="input-row"><label>Pies / Weight (g)</label>
         <div><input type="number" id="numPies" value="3" oninput="calculate()"> <input type="number" id="targetW" value="340" oninput="calculate()"></div>
       </div>
@@ -101,10 +102,10 @@
         <div class="input-row"><label>Biga Flour / Hydro</label><div><input type="number" id="bigaF" value="30" oninput="calculate()"> <input type="number" id="bigaH" value="63" oninput="calculate()"></div></div>
         <div class="input-row"><label>Biga Yeast split (%)</label><input type="number" id="bigaYPct" value="13.3" oninput="calculate()"></div>
       </div>
-      <div id="rowSugar" class="input-row"><label>Sugar %</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
-      <div id="rowOil" class="input-row"><label>Oil %</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
-      <div id="rowMalt" class="input-row"><label>Malt %</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
-      <div id="rowMSG" class="input-row"><label>MSG %</label><input type="number" id="msgPct" value="0.28" oninput="calculate()"></div>
+      <div id="rowSugar" class="input-row hidden"><label>Sugar %</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
+      <div id="rowOil" class="input-row hidden"><label>Oil %</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
+      <div id="rowMalt" class="input-row hidden"><label>Malt %</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
+      <div id="rowMSG" class="input-row hidden"><label>MSG %</label><input type="number" id="msgPct" value="0.28" oninput="calculate()"></div>
     </div>
 
     <div class="card">
@@ -137,6 +138,16 @@
 
   <!-- 4. BAKE -->
   <div id="bake" class="tab-content">
+    <div class="card">
+        <h3>Master Bake Protocol</h3>
+        <textarea id="masterRoutine" class="wide-input routine-box" placeholder="Proven routine (e.g. 2.5hr rest, 525F preheat)..."></textarea>
+    </div>
+
+    <div class="card">
+        <h3>Today's Observations</h3>
+        <textarea id="toppingNotes" class="wide-input" placeholder="Notes on today's specific bake..."></textarea>
+    </div>
+
     <div class="card">
         <h3>Bake Planning</h3>
         <div class="input-row"><label>Target Launch</label><input type="time" id="planBakeTime" value="18:45" oninput="updateBakePlan()"></div>
@@ -174,7 +185,7 @@
 
 <script>
   let timerInterval, seconds = 0;
-  const FIELDS = ['numPies','targetW','residue','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','useCheese2','f1Name','f1Pct','f2Name','f2Pct','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','c1G','c2G','saucePP','sSalt','sGarlic','sOregano','planBakeTime','planRestMins','logDoughOut'];
+  const FIELDS = ['numPies','targetW','residue','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','useCheese2','f1Name','f1Pct','f2Name','f2Pct','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','masterRoutine','toppingNotes','c1G','c2G','saucePP','sSalt','sGarlic','sOregano','planBakeTime','planRestMins','logDoughOut'];
 
   function showTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -247,15 +258,12 @@
   function calculate() {
     const n = parseInt(document.getElementById('numPies').value) || 0, w = parseFloat(document.getElementById('targetW').value) || 0, resP = (parseFloat(document.getElementById('residue').value) || 0) / 100;
     const h = (parseFloat(document.getElementById('hydro').value) || 0)/100, s = (parseFloat(document.getElementById('salt').value) || 0)/100, yT = (parseFloat(document.getElementById('yeast').value) || 0)/100;
-    
     const sugP = document.getElementById('useSugar').checked ? (parseFloat(document.getElementById('sugarPct').value)||0)/100 : 0;
     const oilP = document.getElementById('useOil').checked ? (parseFloat(document.getElementById('oilPct').value)||0)/100 : 0;
     const malP = document.getElementById('useMalt').checked ? (parseFloat(document.getElementById('maltPct').value)||0)/100 : 0;
     const msgP = document.getElementById('useMSG').checked ? (parseFloat(document.getElementById('msgPct').value)||0)/100 : 0;
-
     const f1n = document.getElementById("f1Name").value, f2n = document.getElementById("f2Name").value, f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
 
-    // Pie Topping Input Generation (Preserving values)
     const toppingContainer = document.getElementById('pieToppingInputs');
     const existingInputs = toppingContainer.querySelectorAll('input');
     const savedToppings = Array.from(existingInputs).map(i => i.value);
@@ -269,7 +277,6 @@
     let preW = (w * n) / (1 - resP), tP = 1 + h + s + yT + sugP + oilP + malP + msgP;
     let tF = preW / tP, tW = tF * h, tYG = tF * yT;
 
-    // BIGA
     let bF_T = 0, bF1 = 0, bF2 = 0, bW = 0, bY = 0;
     if (document.getElementById('useBiga').checked) {
         bF_T = tF * (parseFloat(document.getElementById('bigaF').value)/100);
@@ -280,7 +287,6 @@
         document.getElementById('bigaChecklist').innerHTML = bH;
     }
 
-    // MIX
     let mH = '<span class="section-label">1. DISSOLVE IN WATER</span>' + renderItem("Water", (tW - bW).toFixed(1) + "g") + renderItem("Salt", (tF * s).toFixed(1) + "g");
     if(document.getElementById('useMSG').checked) mH += renderItem("MSG", (tF * msgP).toFixed(1) + "g");
     if(document.getElementById('useSugar').checked) mH += renderItem("Sugar", (tF * sugP).toFixed(1) + "g");
@@ -291,7 +297,6 @@
     if(document.getElementById('useOil').checked) mH += '<span class="section-label">3. ADD LAST</span>' + renderItem("Olive Oil", (tF * oilP).toFixed(1) + "g");
     document.getElementById('mixChecklist').innerHTML = mH;
 
-    // BAKE
     let baH = '<span class="section-label">CHEESE & SAUCE</span>' + renderItem("Cheese 1 Total", (parseFloat(document.getElementById('c1G').value) * n).toFixed(1) + "g");
     if(document.getElementById('useCheese2').checked) baH += renderItem("Cheese 2 Total", (parseFloat(document.getElementById('c2G').value) * n).toFixed(1) + "g");
     let ts = (parseFloat(document.getElementById('saucePP').value) || 0) * n;
@@ -316,26 +321,26 @@
 
   function saveRecipe() {
     const name = document.getElementById('saveName').value; if(!name) return;
-    let lib = JSON.parse(localStorage.getItem('pizLibV9') || '{}');
+    let lib = JSON.parse(localStorage.getItem('pizLibV10') || '{}');
     let data = {}; FIELDS.forEach(f => { let el = document.getElementById(f); if(el) data[f] = el.type === 'checkbox' ? el.checked : el.value; });
-    lib[name] = data; localStorage.setItem('pizLibV9', JSON.stringify(lib));
+    lib[name] = data; localStorage.setItem('pizLibV10', JSON.stringify(lib));
     renderLib(); alert("Saved!");
   }
 
   function renderLib() {
-    let lib = JSON.parse(localStorage.getItem('pizLibV9') || '{}');
+    let lib = JSON.parse(localStorage.getItem('pizLibV10') || '{}');
     let html = ''; for(let name in lib) html += `<div class="library-item"><span onclick="loadRecipe('${name}')" style="flex:1; cursor:pointer">${name}</span><span onclick="deleteRecipe('${name}')" style="color:red; cursor:pointer">×</span></div>`;
     document.getElementById('libraryList').innerHTML = html;
   }
 
   function loadRecipe(n) {
-    let lib = JSON.parse(localStorage.getItem('pizLibV9') || '{}'), data = lib[n];
+    let lib = JSON.parse(localStorage.getItem('pizLibV10') || '{}'), data = lib[n];
     document.getElementById('saveName').value = n;
     FIELDS.forEach(f => { let el = document.getElementById(f); if(el && el.type === 'checkbox') el.checked = data[f]; else if(el) el.value = data[f]; });
     toggleUI();
   }
 
-  function deleteRecipe(n) { let lib = JSON.parse(localStorage.getItem('pizLibV9') || '{}'); delete lib[n]; localStorage.setItem('pizLibV9', JSON.stringify(lib)); renderLib(); }
+  function deleteRecipe(n) { let lib = JSON.parse(localStorage.getItem('pizLibV10') || '{}'); delete lib[n]; localStorage.setItem('pizLibV10', JSON.stringify(lib)); renderLib(); }
 
   window.onload = () => { renderLib(); toggleUI(); };
 </script>
