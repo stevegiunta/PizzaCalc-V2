@@ -9,7 +9,7 @@
       --bg: #121212; --card: #1e1e1e; --primary: #ff4757; --accent: #f4a261;
       --text: #e8d7c1; --input-bg: #2a2a2a; --border: #333;
     }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 120px; }
     header { background: linear-gradient(135deg, #8B1E3F, #ff4757); padding: 20px; text-align: center; }
     h1 { margin: 0; font-size: 1.4rem; color: white; }
     
@@ -20,9 +20,9 @@
     .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
     .input-row label { font-size: 0.9rem; flex: 1; }
     
-    input { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; font-family: inherit; }
+    input, select { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; font-family: inherit; }
     input[type="number"] { width: 65px; text-align: center; }
-    input.name-input { width: 100px; text-align: left; font-size: 0.8rem; border-color: #555; }
+    input.name-input { width: 110px; text-align: left; font-size: 0.8rem; border-color: #555; }
     input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
     
     .hidden { display: none; }
@@ -33,6 +33,13 @@
     .res-label { color: #999; }
     
     .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem; background: #181818; padding: 10px; border-radius: 8px; }
+
+    /* Library Styles */
+    .library-item { display: flex; justify-content: space-between; align-items: center; background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
+    .lib-name { font-weight: 600; font-size: 0.9rem; color: var(--text); flex-grow: 1; cursor: pointer; }
+    .btn-del { color: #ff4757; background: none; border: none; padding: 5px 10px; font-size: 1.2rem; cursor: pointer; }
+
+    .fab { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 800; width: 80%; max-width: 350px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: pointer;}
   </style>
 </head>
 <body>
@@ -41,7 +48,7 @@
 
 <div class="container">
 
-  <!-- 1. DOUGH FOUNDATIONS (PRIORITY #1) -->
+  <!-- 1. DOUGH FOUNDATIONS -->
   <div class="card">
     <h3>Dough Foundations</h3>
     <div class="input-row">
@@ -51,14 +58,18 @@
             <input type="number" id="targetW" value="340" oninput="calculate()">
         </div>
     </div>
-    <div class="input-row"><label>Hydration (%)</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
-    <div class="input-row"><label>Salt (%)</label><input type="number" id="salt" value="1.9" oninput="calculate()"></div>
+    <div class="input-row"><label>Hydration / Salt (%)</label>
+        <div>
+            <input type="number" id="hydro" value="67" oninput="calculate()">
+            <input type="number" id="salt" value="1.9" oninput="calculate()">
+        </div>
+    </div>
     <div class="input-row"><label>Yeast (%)</label><input type="number" id="yeast" value="0.25" step="0.05" oninput="calculate()"></div>
   </div>
 
-  <!-- 2. ACTIVE INGREDIENTS (THE TOGGLES) -->
+  <!-- 2. CUSTOMIZE RECIPE -->
   <div class="card">
-    <h3>Customize Recipe</h3>
+    <h3>Active Ingredients</h3>
     <div class="settings-grid">
       <label><input type="checkbox" id="useF2" checked onchange="toggleUI()"> Second Flour</label>
       <label><input type="checkbox" id="useBiga" checked onchange="toggleUI()"> Biga</label>
@@ -82,15 +93,15 @@
     </div>
   </div>
 
-  <!-- 4. BIGA & EXTRAS -->
+  <!-- 4. BIGA & SECONDARY -->
   <div id="bigaCard" class="card hidden">
     <h3>Biga Settings</h3>
-    <div class="input-row"><label>Flour (%)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
-    <div class="input-row"><label>Hydration (%)</label><input type="number" id="bigaH" value="63" oninput="calculate()"></div>
+    <div class="input-row"><label>Biga Flour (%)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
+    <div class="input-row"><label>Biga Hydration (%)</label><input type="number" id="bigaH" value="63" oninput="calculate()"></div>
   </div>
 
   <div id="extrasCard" class="card hidden">
-    <h3>Secondary Ingredients (%)</h3>
+    <h3>Secondary (%)</h3>
     <div id="rowSugar" class="input-row hidden"><label>Sugar</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
     <div id="rowOil" class="input-row hidden"><label>Olive Oil</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
     <div id="rowMalt" class="input-row hidden"><label>Diastatic Malt</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
@@ -101,8 +112,12 @@
   <div class="card">
     <h3>Sauce Strategy</h3>
     <div class="input-row"><label>Grams per Pie</label><input type="number" id="saucePerPie" value="100" oninput="calculate()"></div>
-    <div class="input-row"><label>Salt (%)</label><input type="number" id="sauceSalt" value="0.75" step="0.05" oninput="calculate()"></div>
-    <div class="input-row"><label>Garlic Salt/Powder (%)</label><input type="number" id="sauceGarlic" value="0.5" step="0.05" oninput="calculate()"></div>
+    <div class="input-row"><label>Salt / Garlic (%)</label>
+        <div>
+            <input type="number" id="sauceSalt" value="0.75" step="0.05" oninput="calculate()">
+            <input type="number" id="sauceGarlic" value="0.5" step="0.05" oninput="calculate()">
+        </div>
+    </div>
     <div class="input-row"><label>Oregano (%)</label><input type="number" id="sauceOregano" value="0.3" step="0.05" oninput="calculate()"></div>
   </div>
 
@@ -112,22 +127,43 @@
     <div id="result" class="result-display"></div>
   </div>
 
+  <!-- 7. LIBRARY -->
+  <div class="card">
+    <h3>Recipe Library</h3>
+    <div class="input-row">
+        <input type="text" id="saveName" placeholder="Recipe Name..." style="flex: 1; text-align: left;">
+        <button onclick="saveRecipe()" style="background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold;">SAVE</button>
+    </div>
+    <div id="libraryList" style="margin-top: 15px;">
+        <!-- Saved recipes appear here -->
+    </div>
+  </div>
+
 </div>
 
+<!-- BOTTOM BUTTON TO QUICK SAVE -->
+<button class="fab" onclick="document.getElementById('saveName').focus()">SAVE TO LIBRARY</button>
+
 <script>
+  // List of all inputs we want to save
+  const FIELDS = [
+    'numPies', 'targetW', 'hydro', 'salt', 'yeast',
+    'useF2', 'useBiga', 'useSugar', 'useOil', 'useMalt', 'useMSG',
+    'f1Name', 'f1Pct', 'f2Name', 'f2Pct',
+    'bigaF', 'bigaH',
+    'sugarPct', 'oilPct', 'maltPct', 'msgPct',
+    'saucePerPie', 'sauceSalt', 'sauceGarlic', 'sauceOregano'
+  ];
+
   function toggleUI() {
     document.getElementById('f2Row').classList.toggle('hidden', !document.getElementById('useF2').checked);
-    if (!document.getElementById('useF2').checked) document.getElementById('f1Pct').value = 100;
-
     document.getElementById('bigaCard').classList.toggle('hidden', !document.getElementById('useBiga').checked);
-
     const showExtras = ['useSugar', 'useOil', 'useMalt', 'useMSG'].some(id => document.getElementById(id).checked);
     document.getElementById('extrasCard').classList.toggle('hidden', !showExtras);
     document.getElementById('rowSugar').classList.toggle('hidden', !document.getElementById('useSugar').checked);
     document.getElementById('rowOil').classList.toggle('hidden', !document.getElementById('useOil').checked);
     document.getElementById('rowMalt').classList.toggle('hidden', !document.getElementById('useMalt').checked);
     document.getElementById('rowMSG').classList.toggle('hidden', !document.getElementById('useMSG').checked);
-
     calculate();
   }
 
@@ -139,12 +175,14 @@
   }
 
   function calculate() {
+    // Collect basics
     const n = parseFloat(document.getElementById("numPies").value) || 0;
     const w = parseFloat(document.getElementById("targetW").value) || 0;
     const h = (parseFloat(document.getElementById("hydro").value) || 0) / 100;
     const s = (parseFloat(document.getElementById("salt").value) || 0) / 100;
     const yTotal = (parseFloat(document.getElementById("yeast").value) || 0) / 100;
     
+    // Toggles
     const useF2 = document.getElementById('useF2').checked;
     const useBiga = document.getElementById('useBiga').checked;
     const f1n = document.getElementById("f1Name").value;
@@ -157,7 +195,7 @@
     const malt = document.getElementById('useMalt').checked ? (parseFloat(document.getElementById("maltPct").value)/100) : 0;
     const msg = document.getElementById('useMSG').checked ? (parseFloat(document.getElementById("msgPct").value)/100) : 0;
 
-    // Dough Math (4% residue)
+    // Math (4% residue)
     let totalW = w * n;
     let preW = totalW / (1 - 0.04); 
     let totalP = 1 + h + s + yTotal + sug + oil + malt + msg;
@@ -196,14 +234,81 @@
     // SAUCE
     let totalSauce = (parseFloat(document.getElementById("saucePerPie").value) || 0) * n;
     res += `<span class="section-head">SAUCE BATCH</span>`;
-    res += `<span class="res-label">Total Sauce:</span> <span class="res-val">${totalSauce.toFixed(1)}g</span><br>`;
+    res += `<span class="res-label">Base Sauce:</span> <span class="res-val">${totalSauce.toFixed(1)}g</span><br>`;
     res += `<span class="res-label">Salt:</span> <span class="res-val">${(totalSauce * (parseFloat(document.getElementById("sauceSalt").value)/100)).toFixed(1)}g</span><br>`;
-    res += `<span class="res-label">Garlic:</span> <span class="res-val">${(totalSauce * (parseFloat(document.getElementById("sauceGarlic").value)/100)).toFixed(1)}g</span><br>`;
-    res += `<span class="res-label">Oregano:</span> <span class="res-val">${(totalSauce * (parseFloat(document.getElementById("sauceOregano").value)/100)).toFixed(1)}g</span>`;
+    res += `<span class="res-label">Garlic / Oregano:</span> <span class="res-val">${(totalSauce * (parseFloat(document.getElementById("sauceGarlic").value)/100)).toFixed(1)}g / ${(totalSauce * (parseFloat(document.getElementById("sauceOregano").value)/100)).toFixed(1)}g</span>`;
 
     document.getElementById("result").innerHTML = res;
   }
-  window.onload = toggleUI;
+
+  // --- LIBRARY FUNCTIONS ---
+  function saveRecipe() {
+    const name = document.getElementById('saveName').value.trim();
+    if (!name) { alert("Give your recipe a name first!"); return; }
+    
+    const recipeData = {};
+    FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      recipeData[id] = (el.type === 'checkbox') ? el.checked : el.value;
+    });
+
+    let library = JSON.parse(localStorage.getItem('pizzaLibrary') || '{}');
+    library[name] = recipeData;
+    localStorage.setItem('pizzaLibrary', JSON.stringify(library));
+    
+    document.getElementById('saveName').value = "";
+    renderLibrary();
+    alert("Recipe Saved!");
+  }
+
+  function loadRecipe(name) {
+    let library = JSON.parse(localStorage.getItem('pizzaLibrary') || '{}');
+    const data = library[name];
+    if (!data) return;
+
+    FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el.type === 'checkbox') el.checked = data[id];
+      else el.value = data[id];
+    });
+
+    toggleUI(); // Refreshes visibility and triggers calculation
+  }
+
+  function deleteRecipe(name) {
+    if (!confirm(`Delete "${name}"?`)) return;
+    let library = JSON.parse(localStorage.getItem('pizzaLibrary') || '{}');
+    delete library[name];
+    localStorage.setItem('pizzaLibrary', JSON.stringify(library));
+    renderLibrary();
+  }
+
+  function renderLibrary() {
+    let library = JSON.parse(localStorage.getItem('pizzaLibrary') || '{}');
+    const listEl = document.getElementById('libraryList');
+    listEl.innerHTML = "";
+
+    const keys = Object.keys(library);
+    if (keys.length === 0) {
+      listEl.innerHTML = `<p style="opacity: 0.4; font-size: 0.8rem; text-align: center;">No saved recipes yet.</p>`;
+      return;
+    }
+
+    keys.forEach(name => {
+      const item = document.createElement('div');
+      item.className = 'library-item';
+      item.innerHTML = `
+        <div class="lib-name" onclick="loadRecipe('${name}')">${name}</div>
+        <button class="btn-del" onclick="deleteRecipe('${name}')">×</button>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  window.onload = function() {
+    renderLibrary();
+    toggleUI();
+  };
 </script>
 </body>
 </html>
