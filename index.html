@@ -9,18 +9,13 @@
       --bg: #121212; --card: #1e1e1e; --primary: #ff4757; --accent: #f4a261;
       --text: #e8d7c1; --border: #333; --success: #2ed573;
     }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
     
-    /* Sticky Header & Navigation */
-    header { background: linear-gradient(135deg, #8B1E3F, #ff4757); padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; color: white; }
+    header { background: linear-gradient(135deg, #8B1E3F, #ff4757); padding: 15px; text-align: center; }
+    h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; color: white; text-transform: uppercase; }
     
-    nav.workflow-tabs { 
-      display: flex; background: var(--card); sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border);
-    }
-    .tab-btn { 
-      flex: 1; padding: 15px 5px; border: none; background: none; color: #777; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; cursor: pointer;
-    }
+    nav.workflow-tabs { display: flex; background: var(--card); sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+    .tab-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: #777; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
     .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
     .container { padding: 15px; max-width: 500px; margin: auto; }
@@ -29,35 +24,32 @@
     .tab-content.active { display: block; }
 
     /* Inputs */
-    .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 70px; text-align: center; }
-    input.name-input { width: 120px; text-align: left; font-size: 0.85rem; }
+    .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
+    input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 65px; text-align: center; }
+    input.name-input { width: 110px; text-align: left; font-size: 0.85rem; }
     label { font-size: 0.9rem; font-weight: 500; }
 
     /* Checklist & Timer */
     .checklist-item { 
       display: flex; justify-content: space-between; align-items: center; 
       padding: 15px; background: #252525; border-radius: 10px; margin-bottom: 8px; 
-      border-left: 4px solid var(--accent); cursor: pointer; transition: 0.2s;
+      border-left: 4px solid var(--accent); cursor: pointer;
     }
-    .checklist-item.done { opacity: 0.2; border-left-color: var(--success); text-decoration: line-through; }
+    .checklist-item.done { opacity: 0.15; border-left-color: var(--success); text-decoration: line-through; }
     .check-val { font-family: monospace; font-weight: bold; font-size: 1.1rem; color: #fff; }
+    .res-label { font-size: 0.9rem; color: #ccc; }
 
-    .timer-display { 
-      font-size: 3rem; font-family: monospace; text-align: center; margin: 10px 0; color: var(--accent); font-weight: bold;
-    }
-    .timer-btn { 
-      width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer;
-    }
+    .timer-display { font-size: 3.5rem; font-family: monospace; text-align: center; margin: 10px 0; color: var(--accent); font-weight: bold; }
+    .timer-btn { width: 100%; padding: 18px; border-radius: 10px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
     .start { background: var(--success); color: #000; }
     .stop { background: var(--primary); color: #fff; }
 
-    /* Settings Grid */
     .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; }
     .settings-grid label { display: flex; align-items: center; gap: 8px; }
 
-    /* Library */
     .library-item { display: flex; justify-content: space-between; background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 5px; border: 1px solid #333; }
+    .hidden { display: none; }
+    h3 { margin-top: 0; color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
   </style>
 </head>
 <body>
@@ -77,12 +69,13 @@
   <div id="setup" class="tab-content active">
     <div class="card">
       <h3>Batch Size</h3>
-      <div class="input-row"><label>Number of Pies</label><input type="number" id="numPies" value="3" oninput="calculate()"></div>
-      <div class="input-row"><label>Target Weight (g)</label><input type="number" id="targetW" value="340" oninput="calculate()"></div>
+      <div class="input-row"><label>Pies / Weight (g)</label>
+        <div><input type="number" id="numPies" value="3" oninput="calculate()"> <input type="number" id="targetW" value="340" oninput="calculate()"></div>
+      </div>
     </div>
 
     <div class="card">
-      <h3>Active Ingredients</h3>
+      <h3>Ingredients Active</h3>
       <div class="settings-grid">
         <label><input type="checkbox" id="useF2" checked onchange="toggleUI()"> 2nd Flour</label>
         <label><input type="checkbox" id="useBiga" checked onchange="toggleUI()"> Biga</label>
@@ -94,10 +87,22 @@
     </div>
 
     <div class="card">
+      <h3>Flour Ratios (%)</h3>
+      <div class="input-row">
+        <input type="text" id="f1Name" value="Bread Flour" class="name-input" oninput="calculate()">
+        <input type="number" id="f1Pct" value="60" oninput="syncFlours(1)">
+      </div>
+      <div id="f2Row" class="input-row">
+        <input type="text" id="f2Name" value="00 Flour" class="name-input" oninput="calculate()">
+        <input type="number" id="f2Pct" value="40" oninput="syncFlours(2)">
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Ratios (%)</h3>
       <div class="input-row"><label>Hydration</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
       <div class="input-row"><label>Salt / Yeast</label>
-        <div><input type="number" id="salt" value="1.9" oninput="calculate()"> <input type="number" id="yeast" value="0.25" oninput="calculate()"></div>
+        <div><input type="number" id="salt" value="1.9" oninput="calculate()"> <input type="number" id="yeast" value="0.25" step="0.05" oninput="calculate()"></div>
       </div>
       <div id="bigaInputs" class="input-row"><label>Biga Flour / Hydro</label>
         <div><input type="number" id="bigaF" value="30" oninput="calculate()"> <input type="number" id="bigaH" value="63" oninput="calculate()"></div>
@@ -107,42 +112,39 @@
     <div class="card">
       <h3>Library</h3>
       <div class="input-row">
-        <input type="text" id="saveName" placeholder="Name..." class="name-input">
-        <button onclick="saveRecipe()" style="padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold">Save</button>
+        <input type="text" id="saveName" placeholder="Template Name..." class="name-input" style="flex:1">
+        <button onclick="saveRecipe()" style="padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold; margin-left:10px">Save</button>
       </div>
       <div id="libraryList"></div>
     </div>
   </div>
 
-  <!-- STAGE 2: BIGA (NIGHT BEFORE) -->
+  <!-- STAGE 2: BIGA -->
   <div id="biga" class="tab-content">
-    <h2 style="color:var(--accent)">Stage 1: The Biga</h2>
-    <p style="font-size:0.8rem; opacity:0.7">Prepare this 12-24 hours before mixing.</p>
+    <h2 style="color:var(--accent)">Stage 1: Biga</h2>
     <div id="bigaChecklist"></div>
   </div>
 
-  <!-- STAGE 3: THE MIX (DAY OF) -->
+  <!-- STAGE 3: THE MIX -->
   <div id="mix" class="tab-content">
     <div class="card">
       <div class="timer-display" id="timer">00:00</div>
       <button id="timerBtn" class="timer-btn start" onclick="toggleTimer()">START MIX TIMER</button>
     </div>
-
-    <h2 style="color:var(--accent)">Stage 2: Main Mix</h2>
-    <p style="font-size:0.8rem; opacity:0.7">Tap ingredients to cross them off.</p>
+    <h2 style="color:var(--accent)">Stage 2: Final Mix</h2>
     <div id="mixChecklist"></div>
   </div>
 
-  <!-- STAGE 4: BAKE DAY (SAUCE) -->
+  <!-- STAGE 4: BAKE DAY -->
   <div id="bake" class="tab-content">
     <div class="card">
-      <h3>Sauce Strategy</h3>
+      <h3>Sauce Prep</h3>
       <div class="input-row"><label>Grams per Pie</label><input type="number" id="saucePP" value="100" oninput="calculate()"></div>
-      <div class="input-row"><label>Salt / Garlic / Oregano (%)</label>
+      <div class="input-row"><label>S / G / O (%)</label>
         <div style="display:flex; gap:5px">
-            <input type="number" id="sSalt" value="0.75" oninput="calculate()" style="width:50px">
-            <input type="number" id="sGarlic" value="0.5" oninput="calculate()" style="width:50px">
-            <input type="number" id="sOregano" value="0.3" oninput="calculate()" style="width:50px">
+            <input type="number" id="sSalt" value="0.75" oninput="calculate()" style="width:48px">
+            <input type="number" id="sGarlic" value="0.5" oninput="calculate()" style="width:48px">
+            <input type="number" id="sOregano" value="0.3" oninput="calculate()" style="width:48px">
         </div>
       </div>
     </div>
@@ -152,12 +154,9 @@
 </div>
 
 <script>
-  // --- CONFIG ---
-  let timerInterval;
-  let seconds = 0;
-  const FIELDS = ['numPies','targetW','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','bigaF','bigaH','saucePP','sSalt','sGarlic','sOregano'];
+  let timerInterval, seconds = 0;
+  const FIELDS = ['numPies','targetW','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','bigaF','bigaH','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct'];
 
-  // --- TABS ---
   function showTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -169,17 +168,22 @@
   function toggleUI() {
     document.getElementById('bigaTabHead').style.display = document.getElementById('useBiga').checked ? 'block' : 'none';
     document.getElementById('bigaInputs').style.display = document.getElementById('useBiga').checked ? 'flex' : 'none';
+    document.getElementById('f2Row').style.display = document.getElementById('useF2').checked ? 'flex' : 'none';
     calculate();
   }
 
-  // --- TIMER ---
+  function syncFlours(id) {
+    if (!document.getElementById('useF2').checked) return;
+    let f1 = document.getElementById("f1Pct"), f2 = document.getElementById("f2Pct");
+    if(id === 1) f2.value = 100 - f1.value; else f1.value = 100 - f2.value;
+    calculate();
+  }
+
   function toggleTimer() {
     const btn = document.getElementById('timerBtn');
     if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      btn.innerText = "RESUME MIX";
-      btn.className = "timer-btn start";
+      clearInterval(timerInterval); timerInterval = null;
+      btn.innerText = "RESUME MIX"; btn.className = "timer-btn start";
     } else {
       timerInterval = setInterval(() => {
         seconds++;
@@ -187,136 +191,113 @@
         let s = (seconds % 60).toString().padStart(2, '0');
         document.getElementById('timer').innerText = `${m}:${s}`;
       }, 1000);
-      btn.innerText = "STOP TIMER";
-      btn.className = "timer-btn stop";
+      btn.innerText = "STOP TIMER"; btn.className = "timer-btn stop";
     }
   }
 
-  // --- MATH & CHECKLIST ---
   function calculate() {
-    // Inputs
     const n = parseFloat(document.getElementById('numPies').value) || 0;
     const w = parseFloat(document.getElementById('targetW').value) || 0;
     const h = (parseFloat(document.getElementById('hydro').value) || 0)/100;
     const s = (parseFloat(document.getElementById('salt').value) || 0)/100;
-    const yTotalPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
+    const yPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
     
-    // Toggles
     const useBiga = document.getElementById('useBiga').checked;
-    const useSugar = document.getElementById('useSugar').checked;
-    const useOil = document.getElementById('useOil').checked;
-    const useMalt = document.getElementById('useMalt').checked;
-    const useMSG = document.getElementById('useMSG').checked;
+    const useF2 = document.getElementById('useF2').checked;
+    const f1n = document.getElementById("f1Name").value;
+    const f2n = document.getElementById("f2Name").value;
+    const f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
+    const f2p = useF2 ? (parseFloat(document.getElementById("f2Pct").value) || 0) / 100 : 0;
 
-    // Core Dough Math
+    // Dough Math (4% residue)
     let totalW = w * n;
     let preW = totalW / (1 - 0.04);
-    let totalP = 1 + h + s + yTotalPct + (useSugar?0.015:0) + (useOil?0.025:0) + (useMalt?0.005:0) + (useMSG?0.0028:0);
-    let totalFlour = preW / totalP;
+    let extrasPct = (document.getElementById('useSugar').checked?0.015:0) + (document.getElementById('useOil').checked?0.025:0) + (document.getElementById('useMalt').checked?0.005:0) + (document.getElementById('useMSG').checked?0.0028:0);
+    let totalFlour = preW / (1 + h + s + yPct + extrasPct);
     let totalWater = totalFlour * h;
-    let totalYeastG = totalFlour * yTotalPct;
+    let totalYeast = totalFlour * yPct;
 
-    // Biga Math
-    let bigaF = 0, bigaW = 0, bigaY = 0;
+    // --- BIGA MATH ---
+    let bF_Total = 0, bF1 = 0, bF2 = 0, bW = 0, bY = 0;
     if (useBiga) {
-        bigaF = totalFlour * (parseFloat(document.getElementById('bigaF').value)/100);
-        bigaW = bigaF * (parseFloat(document.getElementById('bigaH').value)/100);
-        bigaY = totalYeastG * 0.133;
+        bF_Total = totalFlour * (parseFloat(document.getElementById('bigaF').value)/100);
+        bF1 = bF_Total * f1p;
+        bF2 = bF_Total * f2p;
+        bW = bF_Total * (parseFloat(document.getElementById('bigaH').value)/100);
+        bY = totalYeast * 0.133;
     }
 
-    // --- RENDER CHECKLISTS ---
-    
-    // 1. BIGA
+    // --- RENDER BIGA ---
     let bigaHTML = '';
     if(useBiga) {
-        bigaHTML += renderItem("Flour", bigaF.toFixed(1) + "g");
-        bigaHTML += renderItem("Water", bigaW.toFixed(1) + "g");
-        bigaHTML += renderItem("Yeast", bigaY.toFixed(2) + "g");
+        bigaHTML += renderItem(f1n, bF1.toFixed(1) + "g");
+        if(useF2) bigaHTML += renderItem(f2n, bF2.toFixed(1) + "g");
+        bigaHTML += renderItem("Water", bW.toFixed(1) + "g");
+        bigaHTML += renderItem("Yeast", bY.toFixed(2) + "g");
     }
     document.getElementById('bigaChecklist').innerHTML = bigaHTML;
 
-    // 2. MIX (Your exact order)
-    let mixHTML = '';
-    mixHTML += `<div style="padding:10px; opacity:0.6; font-size:0.8rem">1. DISSOLVE IN BOWL:</div>`;
-    mixHTML += renderItem("Water", (totalWater - bigaW).toFixed(1) + "g");
+    // --- RENDER MIX (Your Workflow) ---
+    let mixHTML = '<div style="padding:10px; opacity:0.6; font-size:0.75rem">1. DISSOLVE IN WATER</div>';
+    mixHTML += renderItem("Water", (totalWater - bW).toFixed(1) + "g");
     mixHTML += renderItem("Salt", (totalFlour * s).toFixed(1) + "g");
-    if(useMSG) mixHTML += renderItem("MSG", (totalFlour * 0.0028).toFixed(1) + "g");
-    if(useSugar) mixHTML += renderItem("Sugar", (totalFlour * 0.015).toFixed(1) + "g");
-    if(useMalt) mixHTML += renderItem("Diastatic Malt", (totalFlour * 0.005).toFixed(1) + "g");
+    if(document.getElementById('useMSG').checked) mixHTML += renderItem("MSG", (totalFlour * 0.0028).toFixed(1) + "g");
+    if(document.getElementById('useSugar').checked) mixHTML += renderItem("Sugar", (totalFlour * 0.015).toFixed(1) + "g");
+    if(document.getElementById('useMalt').checked) mixHTML += renderItem("Malt", (totalFlour * 0.005).toFixed(1) + "g");
     
-    mixHTML += `<div style="padding:10px; opacity:0.6; font-size:0.8rem">2. ADD DRY INGREDIENTS:</div>`;
-    mixHTML += renderItem("Total Flour", (totalFlour - bigaF).toFixed(1) + "g");
-    mixHTML += renderItem("Yeast", (totalYeastG - bigaY).toFixed(2) + "g");
+    mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.75rem">2. ADD FLOUR & YEAST</div>';
+    mixHTML += renderItem(f1n, (totalFlour * f1p - bF1).toFixed(1) + "g");
+    if(useF2) mixHTML += renderItem(f2n, (totalFlour * f2p - bF2).toFixed(1) + "g");
+    mixHTML += renderItem("Yeast", (totalYeast - bY).toFixed(2) + "g");
     
-    if(useOil) {
-        mixHTML += `<div style="padding:10px; opacity:0.6; font-size:0.8rem">3. ADD LAST (AFTER INCORPORATION):</div>`;
+    if(document.getElementById('useOil').checked) {
+        mixHTML += '<div style="padding:10px; opacity:0.6; font-size:0.75rem">3. ADD LAST</div>';
         mixHTML += renderItem("Olive Oil", (totalFlour * 0.025).toFixed(1) + "g");
     }
     document.getElementById('mixChecklist').innerHTML = mixHTML;
 
-    // 3. SAUCE
-    let totalSauce = (parseFloat(document.getElementById('saucePP').value) || 0) * n;
-    let sauceHTML = '';
-    sauceHTML += renderItem("Base Sauce", totalSauce.toFixed(1) + "g");
-    sauceHTML += renderItem("Salt", (totalSauce * (parseFloat(document.getElementById('sSalt').value)/100)).toFixed(1) + "g");
-    sauceHTML += renderItem("Garlic Powder", (totalSauce * (parseFloat(document.getElementById('sGarlic').value)/100)).toFixed(1) + "g");
-    sauceHTML += renderItem("Oregano", (totalSauce * (parseFloat(document.getElementById('sOregano').value)/100)).toFixed(1) + "g");
-    document.getElementById('sauceChecklist').innerHTML = sauceHTML;
+    // --- SAUCE ---
+    let ts = (parseFloat(document.getElementById('saucePP').value) || 0) * n;
+    let sHTML = renderItem("Base Sauce", ts.toFixed(1) + "g");
+    sHTML += renderItem("Salt", (ts * (parseFloat(document.getElementById('sSalt').value)/100)).toFixed(1) + "g");
+    sHTML += renderItem("Garlic Powder", (ts * (parseFloat(document.getElementById('sGarlic').value)/100)).toFixed(1) + "g");
+    sHTML += renderItem("Oregano", (ts * (parseFloat(document.getElementById('sOregano').value)/100)).toFixed(1) + "g");
+    document.getElementById('sauceChecklist').innerHTML = sHTML;
   }
 
   function renderItem(label, val) {
-    return `
-      <div class="checklist-item" onclick="this.classList.toggle('done')">
-        <span class="res-label">${label}</span>
-        <span class="check-val">${val}</span>
-      </div>
-    `;
+    return `<div class="checklist-item" onclick="this.classList.toggle('done')"><span class="res-label">${label}</span><span class="check-val">${val}</span></div>`;
   }
 
-  // --- LIBRARY ---
   function saveRecipe() {
-    const name = document.getElementById('saveName').value;
-    if(!name) return;
+    const name = document.getElementById('saveName').value; if(!name) return;
     let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
     let data = {};
-    FIELDS.forEach(f => {
-        let el = document.getElementById(f);
-        data[f] = el.type === 'checkbox' ? el.checked : el.value;
-    });
-    lib[name] = data;
-    localStorage.setItem('pizLib', JSON.stringify(lib));
+    FIELDS.forEach(f => { let el = document.getElementById(f); data[f] = el.type === 'checkbox' ? el.checked : el.value; });
+    lib[name] = data; localStorage.setItem('pizLib', JSON.stringify(lib));
     renderLib();
   }
 
   function renderLib() {
     let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
     let html = '';
-    for(let name in lib) {
-        html += `<div class="library-item"><span onclick="loadRecipe('${name}')" style="flex:1">${name}</span><span onclick="deleteRecipe('${name}')" style="color:red">×</span></div>`;
-    }
+    for(let name in lib) { html += `<div class="library-item"><span onclick="loadRecipe('${name}')" style="flex:1; cursor:pointer">${name}</span><span onclick="deleteRecipe('${name}')" style="color:red; cursor:pointer">×</span></div>`; }
     document.getElementById('libraryList').innerHTML = html;
   }
 
   function loadRecipe(name) {
     let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
     let data = lib[name];
-    FIELDS.forEach(f => {
-        let el = document.getElementById(f);
-        if(el.type === 'checkbox') el.checked = data[f];
-        else el.value = data[f];
-    });
+    FIELDS.forEach(f => { let el = document.getElementById(f); if(el.type === 'checkbox') el.checked = data[f]; else el.value = data[f]; });
     toggleUI();
   }
 
   function deleteRecipe(name) {
-    let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
-    delete lib[name];
-    localStorage.setItem('pizLib', JSON.stringify(lib));
-    renderLib();
+    let lib = JSON.parse(localStorage.getItem('pizLib') || '{}'); delete lib[name];
+    localStorage.setItem('pizLib', JSON.stringify(lib)); renderLib();
   }
 
   window.onload = () => { renderLib(); toggleUI(); };
 </script>
-
 </body>
 </html>
