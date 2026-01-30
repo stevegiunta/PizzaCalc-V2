@@ -4,126 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PizzaCalc Pro</title>
-  
-  <!-- PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#8B1E3F">
   <link rel="manifest" href="manifest.json">
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #121212;
       --card: #1e1e1e;
-      --primary: #ff4757; /* A vibrant pizza red */
-      --accent: #f4a261;  /* A crust gold */
+      --primary: #ff4757;
+      --accent: #f4a261;
       --text: #e8d7c1;
       --input-bg: #2a2a2a;
       --border: #333;
     }
 
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background: var(--bg); 
-      color: var(--text); 
-      margin: 0; 
-      padding-bottom: 80px; /* Space for the bottom button */
-      overflow-x: hidden;
-    }
-
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
+    
     header {
       background: linear-gradient(135deg, #8B1E3F, #ff4757);
       padding: 30px 20px;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
+    h1 { margin: 0; font-weight: 800; font-size: 1.6rem; color: white; }
+    .subtitle { margin: 5px 0 0; opacity: 0.8; font-size: 0.8rem; color: white; }
 
-    h1 { margin: 0; font-weight: 800; font-size: 1.6rem; letter-spacing: -1px; color: white; }
-    p.subtitle { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; color: white; }
-
-    /* Modern Tab Navigation */
     nav.tabs {
-      display: flex;
-      background: var(--card);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      border-bottom: 1px solid var(--border);
+      display: flex; background: var(--card); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
     }
-
     .tab-btn {
-      padding: 15px 5px;
-      color: #888;
-      border: none;
-      background: none;
-      font-weight: 600;
-      cursor: pointer;
-      flex: 1;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.3s;
+      padding: 15px 5px; color: #888; border: none; background: none; font-weight: 600; flex: 1; font-size: 0.75rem; text-transform: uppercase;
     }
+    .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-    .tab-btn.active {
-      color: var(--primary);
-      border-bottom: 3px solid var(--primary);
-    }
-
-    .container { padding: 20px; max-width: 600px; margin: auto; }
-
-    /* Hidden state for tabs */
-    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .container { padding: 15px; max-width: 500px; margin: auto; }
+    .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      border: 1px solid var(--border);
+      background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border);
     }
+    h3 { margin: 0 0 15px 0; color: var(--accent); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
 
-    h3 { margin-top: 0; color: var(--accent); font-size: 1.1rem; }
+    /* Input Styling */
+    .input-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .input-row label { font-size: 0.9rem; font-weight: 500; }
+    .input-row input {
+      background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 8px; width: 80px; text-align: center; font-family: inherit;
+    }
+    .input-row input.wide { width: 120px; text-align: left; }
 
-    /* Placeholder for the math output */
+    /* Results Styling */
     .result-display {
-      background: #000;
-      color: #0f0; /* Retro terminal green for contrast */
-      padding: 15px;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
+      background: #000; color: #f4a261; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 0.9rem; line-height: 1.6; border: 1px solid #333;
     }
+    .res-val { color: #fff; font-weight: bold; }
+    .res-label { color: #888; }
 
-    /* Floating Action Button */
     .fab {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 15px 40px;
-      border-radius: 30px;
-      font-weight: 800;
-      font-size: 1rem;
-      box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
-      cursor: pointer;
-      z-index: 1000;
-      width: 80%;
-      max-width: 300px;
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 800; width: 80%; max-width: 300px; z-index: 1000;
     }
   </style>
 </head>
@@ -131,7 +74,7 @@
 
 <header>
   <h1>PIZZACALC PRO</h1>
-  <p class="subtitle">v2.0 • Precision Dough Lab</p>
+  <div class="subtitle">Dough Lab • v2.0</div>
 </header>
 
 <nav class="tabs">
@@ -142,60 +85,145 @@
 
 <div class="container">
   
-  <!-- DOUGH TAB -->
   <div id="dough-tab" class="tab-content active">
     <div class="card">
-      <h3>Dough Foundations</h3>
-      <p style="opacity: 0.6;">Inputs will go here in the next step...</p>
+      <h3>Batch Info</h3>
+      <div class="input-row">
+        <label>Number of Pies</label>
+        <input type="number" id="numPies" value="3" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <label>Target Weight (g)</label>
+        <input type="number" id="targetWeight" value="340" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <label>Bowl Residue (%)</label>
+        <input type="number" id="residue" value="4" step="0.5" oninput="calculate()">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Percentages</h3>
+      <div class="input-row">
+        <label>Hydration (%)</label>
+        <input type="number" id="hydration" value="67" step="0.5" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <label>Salt (%)</label>
+        <input type="number" id="salt" value="1.9" step="0.1" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <label>Total Yeast (%)</label>
+        <input type="number" id="totalYeast" value="0.25" step="0.05" oninput="calculate()">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Biga Settings</h3>
+      <div class="input-row">
+        <label>Biga Flour (% of total)</label>
+        <input type="number" id="bigaFlour" value="30" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <label>Biga Hydration (%)</label>
+        <input type="number" id="bigaHydration" value="63" oninput="calculate()">
+      </div>
     </div>
     
     <div class="card">
-        <h3>Live Recipe</h3>
-        <div class="result-display">
-          Ready for your first batch...
+        <h3>Calculated Recipe</h3>
+        <div id="result" class="result-display">
+          <!-- Math pops in here -->
         </div>
     </div>
   </div>
 
-  <!-- EXTRAS TAB -->
   <div id="extras-tab" class="tab-content">
     <div class="card">
-      <h3>The Toppings</h3>
-      <p style="opacity: 0.6;">Sauce and Cheese logic will go here...</p>
+      <h3>Sauce & Cheese</h3>
+      <p style="opacity: 0.5;">Coming in the next step...</p>
     </div>
   </div>
 
-  <!-- SAVED TAB -->
   <div id="saved-tab" class="tab-content">
     <div class="card">
-      <h3>Recipe Library</h3>
-      <p style="opacity: 0.6;">Your saved experiments will appear here.</p>
+      <h3>Saved Recipes</h3>
+      <p style="opacity: 0.5;">Library logic coming soon...</p>
     </div>
   </div>
 
 </div>
 
-<button class="fab">SAVE RECIPE</button>
+<button class="fab" onclick="alert('Saving logic coming next!')">SAVE RECIPE</button>
 
 <script>
+  // TAB NAVIGATION
   function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].classList.remove("active");
-    }
-    tablinks = document.getElementsByClassName("tab-btn");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].classList.remove("active");
-    }
+    let tabcontent = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
+    let tablinks = document.getElementsByClassName("tab-btn");
+    for (let i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
     document.getElementById(tabName).classList.add("active");
     evt.currentTarget.classList.add("active");
-    
-    // Haptic feedback (vibration) if supported
-    if (window.navigator.vibrate) {
-      window.navigator.vibrate(10);
-    }
   }
+
+  // THE MATH ENGINE
+  function calculate() {
+    // 1. Get Values
+    const n = parseFloat(document.getElementById("numPies").value) || 0;
+    const w = parseFloat(document.getElementById("targetWeight").value) || 0;
+    const r = (parseFloat(document.getElementById("residue").value) || 0) / 100;
+    const h = (parseFloat(document.getElementById("hydration").value) || 0) / 100;
+    const s = (parseFloat(document.getElementById("salt").value) || 0) / 100;
+    const y = (parseFloat(document.getElementById("totalYeast").value) || 0) / 100;
+    
+    const bf = (parseFloat(document.getElementById("bigaFlour").value) || 0) / 100;
+    const bh = (parseFloat(document.getElementById("bigaHydration").value) || 0) / 100;
+
+    // Fixed Extras (based on your original V1 settings)
+    const sugar = 0.015; 
+    const oil = 0.025;
+
+    // 2. Calculations
+    let totalW = w * n;
+    let preW = totalW / (1 - r);
+    let totalP = 1 + h + s + y + sugar + oil; 
+    let flour = preW / totalP;
+    
+    let water = flour * h;
+    let yeast = flour * y;
+    
+    let bigaF = flour * bf;
+    let bigaW = bigaF * bh;
+    let bigaY = yeast * 0.133; // 13.3% of yeast in biga per your v1
+
+    let finalF = flour - bigaF;
+    let finalW = water - bigaW;
+    let finalY = yeast - bigaY;
+
+    // 3. Display Results
+    document.getElementById("result").innerHTML = `
+      <div style="border-bottom: 1px solid #333; margin-bottom:10px; padding-bottom:10px">
+        <span class="res-label">Total Batch:</span> <span class="res-val">${preW.toFixed(1)}g</span><br>
+        <span class="res-label">Per Pie:</span> <span class="res-val">${(preW/n).toFixed(1)}g</span>
+      </div>
+      
+      <b style="color:var(--primary)">BIGA (Night Before)</b><br>
+      <span class="res-label">Flour:</span> <span class="res-val">${bigaF.toFixed(1)}g</span><br>
+      <span class="res-label">Water:</span> <span class="res-val">${bigaW.toFixed(1)}g</span><br>
+      <span class="res-label">Yeast:</span> <span class="res-val">${bigaY.toFixed(2)}g</span><br><br>
+      
+      <b style="color:var(--primary)">FINAL MIX</b><br>
+      <span class="res-label">Remaining Flour:</span> <span class="res-val">${finalF.toFixed(1)}g</span><br>
+      <span class="res-label">Remaining Water:</span> <span class="res-val">${finalW.toFixed(1)}g</span><br>
+      <span class="res-label">Salt:</span> <span class="res-val">${(flour * s).toFixed(1)}g</span><br>
+      <span class="res-label">Yeast:</span> <span class="res-val">${finalY.toFixed(2)}g</span><br>
+      <span class="res-label">Oil/Sugar:</span> <span class="res-val">${(flour*oil + flour*sugar).toFixed(1)}g</span>
+    `;
+  }
+
+  // Run calculation once on load
+  window.onload = calculate;
 </script>
 
 </body>
