@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PizzaCalc Timeline</title>
+  <title>PizzaCalc Pro • Timeline</title>
   <style>
     :root {
       --bg: #121212; --card: #1e1e1e; --primary: #ff4757; --accent: #f4a261;
       --text: #e8d7c1; --border: #333; --success: #2ed573;
     }
     body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
-    
     header { background: linear-gradient(135deg, #8B1E3F, #ff4757); padding: 15px; text-align: center; }
-    h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; color: white; text-transform: uppercase; }
+    h1 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; color: white; text-transform: uppercase; }
     
-    nav.workflow-tabs { display: flex; background: var(--card); sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+    nav.workflow-tabs { display: flex; background: var(--card); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
     .tab-btn { flex: 1; padding: 15px 5px; border: none; background: none; color: #777; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; }
     .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
@@ -27,7 +26,7 @@
     .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
     input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; font-size: 1rem; width: 65px; text-align: center; }
     input.name-input { width: 110px; text-align: left; font-size: 0.85rem; }
-    label { font-size: 0.85rem; font-weight: 500; color: #bbb; }
+    label { font-size: 0.8rem; font-weight: 500; color: #bbb; }
 
     /* Checklist & Timer */
     .checklist-item { 
@@ -43,12 +42,12 @@
     .start { background: var(--success); color: #000; }
     .stop { background: var(--primary); color: #fff; }
 
-    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.75rem; }
     .settings-grid label { display: flex; align-items: center; gap: 8px; }
 
     .library-item { display: flex; justify-content: space-between; background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 5px; border: 1px solid #333; }
     .hidden { display: none !important; }
-    h3 { margin-top: 0; color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    h3 { margin-top: 0; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
   </style>
 </head>
 <body>
@@ -67,14 +66,15 @@
   <!-- STAGE 1: SETUP -->
   <div id="setup" class="tab-content active">
     <div class="card">
-      <h3>Batch Size</h3>
+      <h3>Batch Foundations</h3>
       <div class="input-row"><label>Pies / Weight (g)</label>
         <div><input type="number" id="numPies" value="3" oninput="calculate()"> <input type="number" id="targetW" value="340" oninput="calculate()"></div>
       </div>
+      <div class="input-row"><label>Bowl Residue (%)</label><input type="number" id="residue" value="4" oninput="calculate()"></div>
     </div>
 
     <div class="card">
-      <h3>Customize Checklist</h3>
+      <h3>Active Ingredients</h3>
       <div class="settings-grid">
         <label><input type="checkbox" id="useF2" checked onchange="toggleUI()"> 2nd Flour</label>
         <label><input type="checkbox" id="useBiga" checked onchange="toggleUI()"> Biga</label>
@@ -82,6 +82,7 @@
         <label><input type="checkbox" id="useOil" checked onchange="toggleUI()"> Olive Oil</label>
         <label><input type="checkbox" id="useMalt" checked onchange="toggleUI()"> Malt</label>
         <label><input type="checkbox" id="useMSG" checked onchange="toggleUI()"> MSG</label>
+        <label><input type="checkbox" id="useCheese2" onchange="toggleUI()"> 2nd Cheese</label>
       </div>
     </div>
 
@@ -123,7 +124,7 @@
     <div class="card">
       <h3>Library</h3>
       <div class="input-row">
-        <input type="text" id="saveName" placeholder="Recipe Name..." class="name-input" style="flex:1">
+        <input type="text" id="saveName" placeholder="Name..." class="name-input" style="flex:1">
         <button onclick="saveRecipe()" style="padding:10px; background:var(--accent); border:none; border-radius:5px; font-weight:bold; margin-left:10px">Save</button>
       </div>
       <div id="libraryList"></div>
@@ -149,8 +150,18 @@
   <!-- STAGE 4: BAKE DAY -->
   <div id="bake" class="tab-content">
     <div class="card">
-      <h3>Sauce Prep</h3>
-      <div class="input-row"><label>Grams per Pie</label><input type="number" id="saucePP" value="100" oninput="calculate()"></div>
+      <h3>Cheese Prep (per pie)</h3>
+      <div class="input-row"><label>Cheese 1 Name / g</label>
+        <div><input type="text" id="c1Name" value="WMLM" class="name-input" style="width:80px"> <input type="number" id="c1G" value="212" oninput="calculate()"></div>
+      </div>
+      <div id="c2Row" class="input-row hidden"><label>Cheese 2 Name / g</label>
+        <div><input type="text" id="c2Name" value="Parmesan" class="name-input" style="width:80px"> <input type="number" id="c2G" value="10" oninput="calculate()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sauce Prep (per pie)</h3>
+      <div class="input-row"><label>Base Sauce (g)</label><input type="number" id="saucePP" value="100" oninput="calculate()"></div>
       <div class="input-row"><label>S / G / O (%)</label>
         <div style="display:flex; gap:5px">
             <input type="number" id="sSalt" value="0.75" oninput="calculate()" style="width:48px">
@@ -159,14 +170,14 @@
         </div>
       </div>
     </div>
-    <div id="sauceChecklist"></div>
+    <div id="bakeChecklist"></div>
   </div>
 
 </div>
 
 <script>
   let timerInterval, seconds = 0;
-  const FIELDS = ['numPies','targetW','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct'];
+  const FIELDS = ['numPies','targetW','residue','hydro','salt','yeast','useF2','useBiga','useSugar','useOil','useMalt','useMSG','useCheese2','bigaF','bigaH','bigaYPct','sugarPct','oilPct','maltPct','msgPct','saucePP','sSalt','sGarlic','sOregano','f1Name','f1Pct','f2Name','f2Pct','c1Name','c1G','c2Name','c2G'];
 
   function showTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -181,6 +192,7 @@
     document.getElementById('bigaTabHead').style.display = useBiga ? 'block' : 'none';
     document.getElementById('bigaInputs').classList.toggle('hidden', !useBiga);
     document.getElementById('f2Row').style.display = document.getElementById('useF2').checked ? 'flex' : 'none';
+    document.getElementById('c2Row').classList.toggle('hidden', !document.getElementById('useCheese2').checked);
     
     const showExtras = ['useSugar', 'useOil', 'useMalt', 'useMSG'].some(id => document.getElementById(id).checked);
     document.getElementById('extrasInputs').classList.toggle('hidden', !showExtras);
@@ -218,6 +230,7 @@
   function calculate() {
     const n = parseFloat(document.getElementById('numPies').value) || 0;
     const w = parseFloat(document.getElementById('targetW').value) || 0;
+    const resPct = (parseFloat(document.getElementById('residue').value) || 0) / 100;
     const h = (parseFloat(document.getElementById('hydro').value) || 0)/100;
     const s = (parseFloat(document.getElementById('salt').value) || 0)/100;
     const yTotalPct = (parseFloat(document.getElementById('yeast').value) || 0)/100;
@@ -234,9 +247,9 @@
     const f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
     const f2p = useF2 ? (parseFloat(document.getElementById("f2Pct").value) || 0) / 100 : 0;
 
-    // Total Dough Math (4% residue)
+    // Total Dough Math
     let totalW = w * n;
-    let preW = totalW / (1 - 0.04);
+    let preW = totalW / (1 - resPct);
     let totalP = 1 + h + s + yTotalPct + sugarPct + oilPct + maltPct + msgPct;
     let totalFlour = preW / totalP;
     let totalWater = totalFlour * h;
@@ -263,7 +276,7 @@
     }
     document.getElementById('bigaChecklist').innerHTML = bigaHTML;
 
-    // --- RENDER MIX (Your Workflow) ---
+    // --- RENDER MIX ---
     let mixHTML = '<div style="padding:10px; opacity:0.6; font-size:0.75rem">1. DISSOLVE IN WATER</div>';
     mixHTML += renderItem("Water", (totalWater - bW).toFixed(1) + "g");
     mixHTML += renderItem("Salt", (totalFlour * s).toFixed(1) + "g");
@@ -282,13 +295,20 @@
     }
     document.getElementById('mixChecklist').innerHTML = mixHTML;
 
-    // --- SAUCE ---
+    // --- BAKE DAY (SAUCE & CHEESE) ---
+    let bakeHTML = '<div style="padding:10px; opacity:0.6; font-size:0.75rem">CHEESE BATCH</div>';
+    bakeHTML += renderItem(document.getElementById('c1Name').value, (parseFloat(document.getElementById('c1G').value) * n).toFixed(1) + "g");
+    if(document.getElementById('useCheese2').checked) {
+      bakeHTML += renderItem(document.getElementById('c2Name').value, (parseFloat(document.getElementById('c2G').value) * n).toFixed(1) + "g");
+    }
+
     let ts = (parseFloat(document.getElementById('saucePP').value) || 0) * n;
-    let sHTML = renderItem("Base Sauce", ts.toFixed(1) + "g");
-    sHTML += renderItem("Salt", (ts * (parseFloat(document.getElementById('sSalt').value)/100)).toFixed(1) + "g");
-    sHTML += renderItem("Garlic Powder", (ts * (parseFloat(document.getElementById('sGarlic').value)/100)).toFixed(1) + "g");
-    sHTML += renderItem("Oregano", (ts * (parseFloat(document.getElementById('sOregano').value)/100)).toFixed(1) + "g");
-    document.getElementById('sauceChecklist').innerHTML = sHTML;
+    bakeHTML += '<div style="padding:10px; opacity:0.6; font-size:0.75rem">SAUCE BATCH</div>';
+    bakeHTML += renderItem("Base Sauce", ts.toFixed(1) + "g");
+    bakeHTML += renderItem("Salt", (ts * (parseFloat(document.getElementById('sSalt').value)/100)).toFixed(2) + "g");
+    bakeHTML += renderItem("Garlic Powder", (ts * (parseFloat(document.getElementById('sGarlic').value)/100)).toFixed(2) + "g");
+    bakeHTML += renderItem("Oregano", (ts * (parseFloat(document.getElementById('sOregano').value)/100)).toFixed(2) + "g");
+    document.getElementById('bakeChecklist').innerHTML = bakeHTML;
   }
 
   function renderItem(label, val) {
@@ -314,7 +334,12 @@
   function loadRecipe(name) {
     let lib = JSON.parse(localStorage.getItem('pizLib') || '{}');
     let data = lib[name];
-    FIELDS.forEach(f => { let el = document.getElementById(f); if(el.type === 'checkbox') el.checked = data[f]; else el.value = data[f]; });
+    FIELDS.forEach(f => { 
+      let el = document.getElementById(f); 
+      if(!el) return;
+      if(el.type === 'checkbox') el.checked = data[f]; 
+      else el.value = data[f]; 
+    });
     toggleUI();
   }
 
