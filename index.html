@@ -97,8 +97,8 @@
         <div class="input-row"><label>Total Yeast (%)</label><input type="number" id="yeast" value="0.25" step="0.01" oninput="calculate()"></div>
     </div>
 
-    <div id="advancedSettings" class="card">
-      <h3>Advanced Percentages (%)</h3>
+    <div class="card">
+      <h3>Advanced Specs (%)</h3>
       <div id="bigaInputs" class="hidden">
         <div class="input-row"><label>Biga Flour / Hydro</label><div><input type="number" id="bigaF" value="30" oninput="calculate()"> <input type="number" id="bigaH" value="63" oninput="calculate()"></div></div>
         <div class="input-row"><label>Biga Yeast (of total %)</label><input type="number" id="bigaYPct" value="13.3" oninput="calculate()"></div>
@@ -149,9 +149,16 @@
     
     <div class="card">
         <h3>Bake Settings (per pie)</h3>
-        <div class="input-row"><label>Cheese 1 / 2 (g)</label><div><input type="number" id="c1G" value="212" oninput="calculate()"> <input type="number" id="c2G" value="10" oninput="calculate()"></div></div>
-        <div class="input-row"><label>Sauce (g) / Salt (%)</label><div><input type="number" id="saucePP" value="100" oninput="calculate()"> <input type="number" id="sSalt" value="0.75" oninput="calculate()"></div></div>
-        <div class="input-row"><label>Garlic / Oregano (%)</label><div><input type="number" id="sGarlic" value="0.5" oninput="calculate()"> <input type="number" id="sOregano" value="0.3" oninput="calculate()"></div></div>
+        <div class="input-row">
+          <label>Cheese 1 (g)</label>
+          <input type="number" id="c1G" value="212" oninput="calculate()"> 
+        </div>
+        <div id="c2InputRow" class="input-row hidden">
+          <label>Cheese 2 (g)</label>
+          <input type="number" id="c2G" value="10" oninput="calculate()">
+        </div>
+        <div class="input-row"><label>Sauce (g) / Salt (%)</label><div><input type="number" id="saucePP" value="100" oninput="calculate()"> <input type="number" id="sSalt" value="0.75" step="0.05" oninput="calculate()"></div></div>
+        <div class="input-row"><label>Garlic / Oregano (%)</label><div><input type="number" id="sGarlic" value="0.5" step="0.05" oninput="calculate()"> <input type="number" id="sOregano" value="0.3" step="0.05" oninput="calculate()"></div></div>
     </div>
     <div id="bakeChecklist"></div>
   </div>
@@ -175,6 +182,10 @@
     document.getElementById('bigaTabHead').style.display = useBiga ? 'block' : 'none';
     document.getElementById('bigaInputs').classList.toggle('hidden', !useBiga);
     document.getElementById('f2Row').classList.toggle('hidden', !document.getElementById('useF2').checked);
+    
+    // Toggle 2nd cheese box in the Bake Settings card
+    document.getElementById('c2InputRow').classList.toggle('hidden', !document.getElementById('useCheese2').checked);
+
     document.getElementById('rowSugar').classList.toggle('hidden', !document.getElementById('useSugar').checked);
     document.getElementById('rowOil').classList.toggle('hidden', !document.getElementById('useOil').checked);
     document.getElementById('rowMalt').classList.toggle('hidden', !document.getElementById('useMalt').checked);
@@ -217,7 +228,7 @@
     const malP = document.getElementById('useMalt').checked ? (parseFloat(document.getElementById('maltPct').value)||0)/100 : 0;
     const msgP = document.getElementById('useMSG').checked ? (parseFloat(document.getElementById('msgPct').value)||0)/100 : 0;
 
-    const f1n = document.getElementById("f1Name").value, f2n = document.getElementById("f2Name").value, f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100, f2p = 1 - f1p;
+    const f1n = document.getElementById("f1Name").value, f2n = document.getElementById("f2Name").value, f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
 
     // Math
     let preW = (w * n) / (1 - resP), tP = 1 + h + s + yT + sugP + oilP + malP + msgP;
@@ -227,7 +238,7 @@
     let bF_T = 0, bF1 = 0, bF2 = 0, bW = 0, bY = 0;
     if (document.getElementById('useBiga').checked) {
         bF_T = tF * (parseFloat(document.getElementById('bigaF').value)/100);
-        bF1 = bF_T * f1p; bF2 = bF_T * f2p;
+        bF1 = bF_T * f1p; bF2 = bF_T * (1 - f1p);
         bW = bF_T * (parseFloat(document.getElementById('bigaH').value)/100);
         bY = tYG * (parseFloat(document.getElementById('bigaYPct').value)/100);
         let bH = renderItem(f1n, bF1.toFixed(1) + "g");
@@ -237,7 +248,7 @@
         document.getElementById('bigaChecklist').innerHTML = bH;
     }
 
-    // MIX (Your Order)
+    // MIX
     let mH = '<span class="section-label">1. DISSOLVE IN WATER</span>';
     mH += renderItem("Water", (tW - bW).toFixed(1) + "g");
     mH += renderItem("Salt", (tF * s).toFixed(1) + "g");
@@ -246,7 +257,7 @@
     if(document.getElementById('useMalt').checked) mH += renderItem("Malt", (tF * malP).toFixed(1) + "g");
     mH += '<span class="section-label">2. ADD FLOURS & YEAST</span>';
     mH += renderItem(f1n, (tF * f1p - bF1).toFixed(1) + "g");
-    if(document.getElementById('useF2').checked) mH += renderItem(f2n, (tF * f2p - bF2).toFixed(1) + "g");
+    if(document.getElementById('useF2').checked) mH += renderItem(f2n, (tF * (1-f1p) - bF2).toFixed(1) + "g");
     mH += renderItem("Yeast", (tYG - bY).toFixed(2) + "g");
     if(document.getElementById('useOil').checked) {
         mH += '<span class="section-label">3. ADD LAST</span>';
