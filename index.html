@@ -37,6 +37,12 @@
     textarea.wide-input { width: 100%; text-align: left; height: 70px; box-sizing: border-box; font-size: 0.85rem; color: #fff; padding: 10px; line-height: 1.4; }
     label { font-size: 0.8rem; font-weight: 500; color: #bbb; }
 
+    /* Seasoning Grid Fix */
+    .seasoning-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .seasoning-item { display: flex; flex-direction: column; align-items: center; }
+    .seasoning-item label { font-size: 0.7rem; color: var(--accent); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+    .seasoning-item input { width: 100%; font-size: 0.9rem; }
+
     .checklist-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #252525; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--accent); cursor: pointer; }
     .checklist-item.done { opacity: 0.15; border-left-color: var(--success); text-decoration: line-through; }
     .check-val { font-family: monospace; font-weight: bold; font-size: 1.1rem; color: #fff; }
@@ -53,11 +59,6 @@
     .hidden { display: none !important; }
     h3 { margin: 0 0 10px 0; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
     .section-label { font-size: 0.7rem; color: var(--primary); font-weight: bold; padding: 5px 0; display: block; }
-    
-    .calc-box { background: #181818; padding: 12px; border-radius: 8px; border: 1px dashed #444; margin-top: 10px; font-size: 0.85rem; line-height: 1.4; }
-    .pie-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .pie-num { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; flex-shrink: 0; }
-    .now-btn { background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
     .routine-box { background: #1e2a24; border: 1px solid var(--success); color: #fff; }
   </style>
 </head>
@@ -180,11 +181,21 @@
         <div class="input-row"><label>Cheese 1 (g/pie)</label><input type="number" id="c1G" value="212" oninput="calculate()"></div>
         <div id="c2InputRow" class="input-row hidden"><label>Cheese 2 (g/pie)</label><input type="number" id="c2G" value="10" oninput="calculate()"></div>
         <div class="input-row"><label>Sauce (g/pie)</label><input type="number" id="saucePP" value="100" oninput="calculate()"></div>
+        
         <div class="section-label">Sauce Seasoning (%)</div>
-        <div class="input-row">
-            <input type="number" id="sSalt" value="0.75" step="0.01" oninput="calculate()" style="width:50px">
-            <input type="number" id="sGarlic" value="0.5" step="0.01" oninput="calculate()" style="width:50px">
-            <input type="number" id="sOregano" value="0.3" step="0.01" oninput="calculate()" style="width:50px">
+        <div class="seasoning-grid">
+            <div class="seasoning-item">
+                <label>Salt</label>
+                <input type="number" id="sSalt" value="0.75" step="0.01" oninput="calculate()">
+            </div>
+            <div class="seasoning-item">
+                <label>Garlic</label>
+                <input type="number" id="sGarlic" value="0.5" step="0.01" oninput="calculate()">
+            </div>
+            <div class="seasoning-item">
+                <label>Oregano</label>
+                <input type="number" id="sOregano" value="0.3" step="0.01" oninput="calculate()">
+            </div>
         </div>
     </div>
     <div id="bakeChecklist"></div>
