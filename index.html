@@ -15,16 +15,21 @@
     
     .container { padding: 15px; max-width: 500px; margin: auto; }
     .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
-    h3 { margin: 0 0 12px 0; color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
+    h3 { margin: 0 0 12px 0; color: var(--accent); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
 
-    /* Layout Helpers */
-    .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    input, select { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; font-family: inherit; }
-    input[type="number"] { width: 60px; text-align: center; }
-    input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+    .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+    .input-row label { font-size: 0.9rem; flex: 1; }
+    
+    input { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; font-family: inherit; }
+    input[type="number"] { width: 65px; text-align: center; }
+    input.name-input { width: 100px; text-align: left; font-size: 0.8rem; }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
     
     .hidden { display: none; }
-    .dim { opacity: 0.3; pointer-events: none; }
+    
+    /* Sauce Note Styling */
+    .cheat-sheet { font-size: 0.75rem; background: #252525; padding: 10px; border-radius: 6px; margin-top: 5px; color: #aaa; border-left: 3px solid var(--accent); }
+    .cheat-sheet b { color: var(--accent); }
 
     .result-display { background: #000; color: #f4a261; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.85rem; line-height: 1.6; }
     .section-head { color: var(--primary); font-weight: 800; display: block; margin-top: 10px; border-bottom: 1px solid #222; }
@@ -37,115 +42,153 @@
 
 <div class="container">
 
-  <!-- 1. INGREDIENT SELECTOR (The "Toggle" strategy) -->
+  <!-- 1. RECIPE CUSTOMIZER -->
   <div class="card">
-    <h3>Active Ingredients</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem;">
-      <label><input type="checkbox" id="useBiga" checked onchange="toggleInputs()"> Biga</label>
-      <label><input type="checkbox" id="useOil" checked onchange="toggleInputs()"> Oil</label>
-      <label><input type="checkbox" id="useSugar" checked onchange="toggleInputs()"> Sugar</label>
-      <label><input type="checkbox" id="useMalt" checked onchange="toggleInputs()"> Malt</label>
-      <label><input type="checkbox" id="useMSG" checked onchange="toggleInputs()"> MSG</label>
+    <h3>Include Ingredients</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+      <label><input type="checkbox" id="useF2" checked onchange="toggleUI()"> Second Flour</label>
+      <label><input type="checkbox" id="useBiga" checked onchange="toggleUI()"> Biga</label>
+      <label><input type="checkbox" id="useSugar" checked onchange="toggleUI()"> Sugar</label>
+      <label><input type="checkbox" id="useOil" checked onchange="toggleUI()"> Olive Oil</label>
+      <label><input type="checkbox" id="useMalt" checked onchange="toggleUI()"> Diastatic Malt</label>
+      <label><input type="checkbox" id="useMSG" checked onchange="toggleUI()"> MSG</label>
     </div>
   </div>
 
-  <!-- 2. MAIN INPUTS -->
+  <!-- 2. FLOUR & DOUGH -->
   <div class="card">
-    <h3>Dough Basics</h3>
-    <div class="input-row"><label>Pies / Weight(g)</label>
-      <div><input type="number" id="numPies" value="3" oninput="calculate()"> <input type="number" id="targetW" value="340" oninput="calculate()"></div>
+    <h3>Dough Foundations</h3>
+    <div class="input-row">
+        <label>Pies / Weight(g)</label>
+        <div>
+            <input type="number" id="numPies" value="3" oninput="calculate()">
+            <input type="number" id="targetW" value="340" oninput="calculate()">
+        </div>
     </div>
-    <div class="input-row"><label>Hydration (%)</label><input type="number" id="hydro" value="67" oninput="calculate()"></div>
     
-    <!-- Conditional Inputs -->
-    <div id="bigaSection">
-        <div class="input-row"><label>Biga Flour (%)</label><input type="number" id="bigaF" value="30" oninput="calculate()"></div>
+    <!-- Flour 1 -->
+    <div class="input-row">
+        <input type="text" id="f1Name" value="Bread Flour" class="name-input">
+        <input type="number" id="f1Pct" value="60" oninput="syncFlours(1)">
+    </div>
+    
+    <!-- Optional Flour 2 -->
+    <div id="f2Row" class="input-row">
+        <input type="text" id="f2Name" value="00 Flour" class="name-input">
+        <input type="number" id="f2Pct" value="40" oninput="syncFlours(2)">
+    </div>
+
+    <div class="input-row"><label>Hydration / Salt (%)</label>
+        <div>
+            <input type="number" id="hydro" value="67" oninput="calculate()">
+            <input type="number" id="salt" value="1.9" oninput="calculate()">
+        </div>
     </div>
   </div>
 
-  <!-- 3. SAUCE (The "Library" test) -->
+  <!-- 3. OPTIONAL EXTRAS -->
+  <div id="extrasCard" class="card hidden">
+    <h3>Additional Specs (%)</h3>
+    <div id="rowSugar" class="input-row hidden"><label>Sugar</label><input type="number" id="sugarPct" value="1.5" oninput="calculate()"></div>
+    <div id="rowOil" class="input-row hidden"><label>Olive Oil</label><input type="number" id="oilPct" value="2.5" oninput="calculate()"></div>
+    <div id="rowMalt" class="input-row hidden"><label>Diastatic Malt</label><input type="number" id="maltPct" value="0.5" oninput="calculate()"></div>
+    <div id="rowMSG" class="input-row hidden"><label>MSG</label><input type="number" id="msgPct" value="0.28" oninput="calculate()"></div>
+  </div>
+
+  <!-- 4. SAUCE WITH NOTES -->
   <div class="card">
-    <h3>Sauce Settings</h3>
+    <h3>Sauce Strategy</h3>
     <div class="input-row">
-      <label>Tomato Brand</label>
-      <select id="tomatoBrand" onchange="updateSauceSalt()">
-        <option value="custom">Custom / Other</option>
-        <option value="brandA">Brand A (Low Salt - 0.35%)</option>
-        <option value="brandB">Brand B (No Salt - 0.75%)</option>
-      </select>
+        <label>Sauce Salt (%)</label>
+        <input type="number" id="sauceSalt" value="0.75" step="0.05" oninput="calculate()">
     </div>
-    <div class="input-row">
-      <label>Sauce Salt (%)</label>
-      <input type="number" id="sauceSalt" value="0.75" step="0.05" oninput="calculate()">
+    <div class="cheat-sheet">
+        <b>Reference:</b><br>
+        Cento / Bianco: 0.35% (Pre-salted)<br>
+        Unsalted / Fresh: 0.75% - 1.0%
     </div>
   </div>
 
-  <!-- 4. RESULTS -->
+  <!-- 5. RESULTS -->
   <div class="card">
-    <h3>Live Recipe</h3>
+    <h3>Live Checklist</h3>
     <div id="result" class="result-display"></div>
   </div>
 
 </div>
 
 <script>
-  function toggleInputs() {
-    // Show/Hide sections based on checkboxes
-    document.getElementById('bigaSection').className = document.getElementById('useBiga').checked ? '' : 'hidden';
+  function toggleUI() {
+    // Flour 2 toggle
+    document.getElementById('f2Row').classList.toggle('hidden', !document.getElementById('useF2').checked);
+    if (!document.getElementById('useF2').checked) {
+        document.getElementById('f1Pct').value = 100;
+    }
+
+    // Extras Card & Rows
+    const showExtras = ['useSugar', 'useOil', 'useMalt', 'useMSG'].some(id => document.getElementById(id).checked);
+    document.getElementById('extrasCard').classList.toggle('hidden', !showExtras);
+    
+    document.getElementById('rowSugar').classList.toggle('hidden', !document.getElementById('useSugar').checked);
+    document.getElementById('rowOil').classList.toggle('hidden', !document.getElementById('useOil').checked);
+    document.getElementById('rowMalt').classList.toggle('hidden', !document.getElementById('useMalt').checked);
+    document.getElementById('rowMSG').classList.toggle('hidden', !document.getElementById('useMSG').checked);
+
     calculate();
   }
 
-  function updateSauceSalt() {
-    const brand = document.getElementById('tomatoBrand').value;
-    const saltInput = document.getElementById('sauceSalt');
-    
-    if (brand === 'brandA') saltInput.value = 0.35;
-    if (brand === 'brandB') saltInput.value = 0.75;
-    
-    // If they choose a brand, let's dim the manual input to show it's "set"
-    saltInput.style.opacity = (brand === 'custom') ? '1' : '0.5';
-    
+  function syncFlours(id) {
+    if (!document.getElementById('useF2').checked) return;
+    let f1 = document.getElementById("f1Pct");
+    let f2 = document.getElementById("f2Pct");
+    if(id === 1) f2.value = 100 - f1.value;
+    else f1.value = 100 - f2.value;
     calculate();
   }
 
   function calculate() {
-    // Basic logic
     const n = parseFloat(document.getElementById("numPies").value) || 0;
     const w = parseFloat(document.getElementById("targetW").value) || 0;
     const h = (parseFloat(document.getElementById("hydro").value) || 0) / 100;
+    const s = (parseFloat(document.getElementById("salt").value) || 0) / 100;
     
-    // Check if ingredient is active, else use 0
+    // Checkboxes
+    const useF2 = document.getElementById('useF2').checked;
     const useBiga = document.getElementById('useBiga').checked;
-    const bigaPct = useBiga ? (parseFloat(document.getElementById("bigaF").value)/100) : 0;
-    
-    const sauceSalt = parseFloat(document.getElementById("sauceSalt").value);
+    const useSugar = document.getElementById('useSugar').checked;
+    const useOil = document.getElementById('useOil').checked;
+    const useMalt = document.getElementById('useMalt').checked;
+    const useMSG = document.getElementById('useMSG').checked;
 
-    // Simplified math for demo
+    const f1p = (parseFloat(document.getElementById("f1Pct").value) || 0) / 100;
+    const f2p = useF2 ? (parseFloat(document.getElementById("f2Pct").value) || 0) / 100 : 0;
+    
+    const sug = useSugar ? (parseFloat(document.getElementById("sugarPct").value)/100) : 0;
+    const oil = useOil ? (parseFloat(document.getElementById("oilPct").value)/100) : 0;
+    const malt = useMalt ? (parseFloat(document.getElementById("maltPct").value)/100) : 0;
+    const msg = useMSG ? (parseFloat(document.getElementById("msgPct").value)/100) : 0;
+
+    // The Math
     let totalW = w * n;
-    let flour = totalW / (1 + h + 0.02); // simplified constant for salt/yeast
+    let residue = 0.04; 
+    let preW = totalW / (1 - residue);
+    let totalP = 1 + h + s + sug + oil + malt + msg + 0.0025; // added tiny bit for yeast
+    let flour = preW / totalP;
+
+    let res = `<span class="section-head">DOUGH TOTALS</span>`;
+    res += `Flour: <span class="res-val">${flour.toFixed(1)}g</span><br>`;
+    res += `Water: <span class="res-val">${(flour * h).toFixed(1)}g</span><br>`;
+    res += `Salt: <span class="res-val">${(flour * s).toFixed(1)}g</span><br>`;
     
-    let res = `
-      <span class="section-head">DOUGH BATCH</span>
-      Total Flour: <span class="res-val">${flour.toFixed(1)}g</span><br>
-      Total Water: <span class="res-val">${(flour * h).toFixed(1)}g</span><br>
-    `;
-
-    if (useBiga) {
-      res += `
-        <span class="section-head">BIGA</span>
-        Biga Flour: <span class="res-val">${(flour * bigaPct).toFixed(1)}g</span>
-      `;
-    }
-
-    res += `
-      <span class="section-head">SAUCE NOTES</span>
-      Salt to add: <span class="res-val">${sauceSalt}%</span>
-    `;
+    if (useSugar) res += `Sugar: <span class="res-val">${(flour * sug).toFixed(1)}g</span><br>`;
+    if (useOil) res += `Oil: <span class="res-val">${(flour * oil).toFixed(1)}g</span><br>`;
+    if (useMalt) res += `Malt: <span class="res-val">${(flour * malt).toFixed(1)}g</span><br>`;
+    if (useMSG) res += `MSG: <span class="res-val">${(flour * msg).toFixed(1)}g</span><br>`;
 
     document.getElementById("result").innerHTML = res;
   }
 
-  window.onload = calculate;
+  window.onload = toggleUI; // Initial setup
 </script>
 </body>
 </html>
